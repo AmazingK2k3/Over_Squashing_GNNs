@@ -1,0 +1,9 @@
+Classification Report for GraphSAGE_Rewire:
+              precision    recall  f1-score   support
+
+           0       0.50      0.56      0.53        16
+           1       0.76      0.71      0.73        31
+
+    accuracy                           0.66        47
+   macro avg       0.63      0.64      0.63        47
+weighted avg       0.67      0.66      0.66        47
