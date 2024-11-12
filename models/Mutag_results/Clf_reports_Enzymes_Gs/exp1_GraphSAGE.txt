@@ -1,0 +1,13 @@
+Classification Report for GraphSAGE:
+              precision    recall  f1-score   support
+
+     Class 1       0.00      0.00      0.00        25
+     Class 2       0.19      0.12      0.15        25
+     Class 3       0.36      0.40      0.38        25
+     Class 4       0.16      0.28      0.20        25
+     Class 5       0.24      0.28      0.26        25
+     Class 6       0.13      0.16      0.15        25
+
+    accuracy                           0.21       150
+   macro avg       0.18      0.21      0.19       150
+weighted avg       0.18      0.21      0.19       150
