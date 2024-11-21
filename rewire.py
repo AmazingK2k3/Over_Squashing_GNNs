@@ -2,6 +2,9 @@ import networkx as nx
 import torch_geometric
 import torch
 from torch_geometric.utils import to_networkx
+from dataloader import *
+
+data = data_import("MUTAG")
 
 def rewire1(data,device): # this connects all the adjacent nodes of the bridges together(no triangular rewiring)
   g6 = to_networkx(data, to_undirected = True)
@@ -149,3 +152,6 @@ def rewire_combined(data,device):
 
 
     return edge_index.to(device)
+
+
+
