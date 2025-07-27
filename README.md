@@ -1,10 +1,9 @@
 # On the Bottleneck of Graph Neural Networks and its Practical Implications
 
-This is the official implementation of the paper: [On the Bottleneck of Graph Neural Networks and its Practical Implications](https://openreview.net/pdf?id=i80OPhOCVH2) (ICLR'2021),
+This is the Cloned repository of the paper  [On the Bottleneck of Graph Neural Networks and its Practical Implications](https://openreview.net/pdf?id=i80OPhOCVH2) (ICLR'2021),
 which introduces the **over-squashing** problem of GNNs.
 
-By [Uri Alon](http://urialon.cswp.cs.technion.ac.il/) and [Eran Yahav](http://www.cs.technion.ac.il/~yahave/).
-See also the [[video]](https://youtu.be/vrLsEwzZTCQ), [[poster]](https://urialon.cswp.cs.technion.ac.il/wp-content/uploads/sites/83/2021/03/bottleneck_poster.pdf) and [[slides]](https://urialon.cswp.cs.technion.ac.il/wp-content/uploads/sites/83/2020/07/bottleneck_slides.pdf). 
+
 
 this repository is divided into three sub-projects:
 
@@ -28,7 +27,7 @@ For additional dependencies and instructions, see their original README:
 The instructions for our clone are the same, except that we added an additional flag to every `config_*.yml` file, called `last_layer_fa`, 
 which is set to `True` by default, and reproduces our experiments.
 The main modification that we performed is using a Fully-Adjacent layer as the last 
-GNN layer.
+GNN layer. This has a ton of rewiring features including rewiring based on betweeness of the graphs, bridges and local bridges which can be executed while preparing the dataset!
 3. The main directory (in which this file resides) can be used to reproduce the experiments of 
 Section 4.1 in the paper, for the "Tree-NeighborsMatch" problem. The rest of this README file includes the 
 instructions for this main directory. 
