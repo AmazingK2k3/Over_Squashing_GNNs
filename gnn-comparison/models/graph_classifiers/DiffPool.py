@@ -1,12 +1,26 @@
+#
+# Copyright (C)  2020  University of Pisa
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
 from math import ceil
 
 import torch
-import torch_geometric
 from torch import nn
 from torch.nn import functional as F
 from torch_geometric.nn import DenseSAGEConv, dense_diff_pool
 from torch_geometric.utils import to_dense_batch, to_dense_adj
-from torch_geometric.transforms import ToDense
 
 NUM_SAGE_LAYERS = 3
 
@@ -94,9 +108,6 @@ class DiffPool(nn.Module):
         dim_embedding_MLP = config['dim_embedding_MLP']  # hidden neurons of last 2 MLP layers
 
         self.num_diffpool_layers = num_diffpool_layers
-        self.last_layer_fa = config['last_layer_fa']
-        if self.last_layer_fa:
-            print('Using LastLayerFA')
 
         # Reproduce paper choice about coarse factor
         coarse_factor = 0.1 if num_diffpool_layers == 1 else 0.25
@@ -136,8 +147,6 @@ class DiffPool(nn.Module):
         for i in range(self.num_diffpool_layers):
             if i != 0:
                 mask = None
-            if self.last_layer_fa and i == self.num_diffpool_layers - 1:
-                adj = torch.ones_like(adj)
 
             x, adj, l, e = self.diffpool_layers[i](x, adj, mask)  # x has shape (batch, MAX_no_nodes, feature_size)
             x_all.append(torch.max(x, dim=1)[0])

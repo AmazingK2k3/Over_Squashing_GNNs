@@ -1,0 +1,40 @@
+model:
+  - GraphSAGE
+device:
+  - cuda
+batch_size:
+  - 64
+hidden_units:
+  - 128
+learning_rate:
+  - 0.001
+l2:
+  - 0.0001
+classifier_epochs:
+  - 1000
+optimizer:
+  - Adam
+scheduler:
+  - null
+loss:
+  - MulticlassClassificationLoss
+gradient_clipping:
+  - null
+early_stopper:
+  -
+    class: Patience
+    args:
+      patience: 500
+      use_loss: False
+shuffle:
+  - True
+num_layers:
+  - 5 # changed: 5 ----> 3
+dim_embedding:
+  - 64
+aggregation:
+  - mean 
+rewire_for_all_layers:
+  - 0 # 1 means rewire all layers
+skip_model_selection:
+  - 1 

@@ -1,12 +1,24 @@
+#
+# Copyright (C)  2020  University of Pisa
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
 import torch
-import torch_geometric
-from torch import nn
-from torch.nn import functional as F
-
-from torch_geometric.nn import SAGEConv, global_max_pool
-
-import torch
+from torch._C import NoneType
 import torch.nn.functional as F
+from torch import nn
+from torch_geometric.nn import SAGEConv, global_max_pool
 
 
 class GraphSAGE(nn.Module):
@@ -16,9 +28,9 @@ class GraphSAGE(nn.Module):
         num_layers = config['num_layers']
         dim_embedding = config['dim_embedding']
         self.aggregation = config['aggregation']  # can be mean or max
-        self.last_layer_fa = config['last_layer_fa']
-        if self.last_layer_fa:
-            print('Using LastLayerFA')
+        self.use_rewired_for_all_layers = bool(config['rewire_for_all_layers']) if 'rewire_for_all_layers' in config else False
+
+        
 
         if self.aggregation == 'max':
             self.fc_max = nn.Linear(dim_embedding, dim_embedding)
@@ -27,9 +39,8 @@ class GraphSAGE(nn.Module):
         for i in range(num_layers):
             dim_input = dim_features if i == 0 else dim_embedding
 
-            conv = SAGEConv(dim_input, dim_embedding)
             # Overwrite aggregation method (default is set to mean
-            conv.aggr = self.aggregation
+            conv = SAGEConv(dim_input, dim_embedding, aggr=self.aggregation)
 
             self.layers.append(conv)
 
@@ -38,16 +49,28 @@ class GraphSAGE(nn.Module):
         self.fc2 = nn.Linear(dim_embedding, dim_target)
 
     def forward(self, data):
-        x, edge_index, batch = data.x, data.edge_index, data.batch
+        # if rewired_edge_index is None:
+        #     rewired_edge_index = getattr(data,'rewire_edge_index', None) 
+       #rewired_edge_index = data.rewired_edge_index if hasattr(data, 'rewired_edge_index') else None
+        
+        
+        # rewired_edge_index = data.rewired_edge_index
+        # print(rewired_edge_index)
+        x, edge_index, batch, = data.x, data.edge_index, data.batch
+        rewired_edge_index = data.rewired_edge_index
 
+        if self.use_rewired_for_all_layers:
+            edge_index = rewired_edge_index
+        
         x_all = []
 
         for i, layer in enumerate(self.layers):
-            edges = edge_index
-            if self.last_layer_fa and i == len(self.layers) - 1:
-                block_map = torch.eq(batch.unsqueeze(0), batch.unsqueeze(-1)).int()
-                edges, _ = torch_geometric.utils.dense_to_sparse(block_map)
-            x = layer(x, edges)
+
+            if not self.use_rewired_for_all_layers and i == len(self.layers) - 1:
+                edge_index = rewired_edge_index
+                #print("_________")
+                
+            x = layer(x, edge_index)
             if self.aggregation == 'max':
                 x = torch.relu(self.fc_max(x))
             x_all.append(x)

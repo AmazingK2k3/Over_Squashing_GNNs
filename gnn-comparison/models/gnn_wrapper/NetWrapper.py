@@ -1,7 +1,23 @@
+#
+# Copyright (C)  2020  University of Pisa
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
 import time
 from datetime import timedelta
+
 import torch
-from torch import optim
 
 
 def format_time(avg_time):
@@ -31,8 +47,12 @@ class NetWrapper:
 
             data = data.to(self.device)
             optimizer.zero_grad()
-            output = model(data)
+            output = model(data) # before
 
+        #    # updated code:----------------------------
+        #     rewired_edge_index = getattr(data,'rewired_edge_index',None)
+        #     output = model(data, rewired_edge_index = rewired_edge_index)
+           #------------------------------------------
             if not isinstance(output, tuple):
                 output = (output,)
 
@@ -69,7 +89,12 @@ class NetWrapper:
         acc_all = 0
         for data in loader:
             data = data.to(self.device)
-            output = model(data)
+            output = model(data) # - old code
+            # # new change -----------------:
+            # rewired_edge_index = getattr(data, 'rewired_edge_index',None)
+            # output = model(data, rewired_edge_index = rewired_edge_index)
+            # #------------------------------:
+                      
 
             if not isinstance(output, tuple):
                 output = (output,)

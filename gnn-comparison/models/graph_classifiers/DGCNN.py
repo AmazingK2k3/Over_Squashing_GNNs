@@ -1,5 +1,20 @@
+#
+# Copyright (C)  2020  University of Pisa
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
 import torch
-import torch_geometric
 from torch import nn
 from torch.nn import functional as F
 from torch_geometric.nn import MessagePassing, global_sort_pool
@@ -28,9 +43,6 @@ class DGCNN(nn.Module):
         self.k = self.ks[config.dataset.name][str(config['k'])]
         self.embedding_dim = config['embedding_dim']
         self.num_layers = config['num_layers']
-        self.last_layer_fa = config['last_layer_fa']
-        if self.last_layer_fa:
-            print('Using LastLayerFA')
 
         self.convs = []
         for layer in range(self.num_layers):
@@ -65,12 +77,8 @@ class DGCNN(nn.Module):
 
         hidden_repres = []
 
-        for i, conv in enumerate(self.convs):
-            edges = edge_index
-            if self.last_layer_fa and i == len(self.convs) - 1:
-                block_map = torch.eq(batch.unsqueeze(0), batch.unsqueeze(-1)).int()
-                edges, _ = torch_geometric.utils.dense_to_sparse(block_map)
-            x = torch.tanh(conv(x, edges))
+        for conv in self.convs:
+            x = torch.tanh(conv(x, edge_index))
             hidden_repres.append(x)
 
         # apply sortpool

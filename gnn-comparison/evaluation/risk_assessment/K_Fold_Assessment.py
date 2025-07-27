@@ -1,12 +1,25 @@
-import os
+#
+# Copyright (C)  2020  University of Pisa
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+import concurrent.futures
 import json
+import os
 
 import numpy as np
-import concurrent.futures
 
-import torch
-
-from config.base import Config
 from evaluation.dataset_getter import DatasetGetter
 from log import Logger
 
@@ -108,7 +121,7 @@ class KFoldAssessment:
         dataset_getter = DatasetGetter(outer_k)
 
         best_config = self.model_selector.model_selection(dataset_getter, experiment_class, exp_path,
-                                                          self.model_configs, debug, other)
+                                                          self.model_configs, debug, other,skip_model_selection = True)
 
         # Retrain with the best configuration and test
         experiment = experiment_class(best_config['config'], exp_path)
@@ -122,7 +135,6 @@ class KFoldAssessment:
 
         training_scores, test_scores = [], []
 
-        torch.set_num_threads(self.outer_processes)
         # Mitigate bad random initializations
         for i in range(3):
             training_score, test_score = experiment.run_test(dataset_getter, logger, other)

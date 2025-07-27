@@ -1,11 +1,26 @@
+#
+# Copyright (C)  2020  University of Pisa
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
 import torch
-import torch_geometric
 from torch import nn
 from torch.nn import functional as F
-from torch_geometric.nn import MessagePassing, global_mean_pool
-from torch_geometric.utils import degree, dense_to_sparse
-from torch_geometric.nn import ECConv
-from torch_scatter import scatter_add
+from torch_geometric.nn import global_mean_pool
+from torch_geometric.nn.conv import ECConv
+from torch_geometric.utils import dense_to_sparse
+
 from utils.batch_utils import _make_block_diag
 
 
@@ -71,9 +86,6 @@ class ECC(nn.Module):
             dim_input = dim_features if i == 0 else dim_embedding
             layer = ECCLayer(dim_input, dim_embedding, dropout=self.dropout)
             self.layers.append(layer)
-        self.last_layer_fa = config['last_layer_fa']
-        if self.last_layer_fa:
-            print('Using LastLayerFA')
 
         fnet = nn.Sequential(nn.Linear(1, 16),
                              nn.ReLU(),
@@ -97,7 +109,7 @@ class ECC(nn.Module):
 
         laplacian_layer_list = [laplacians[i][layer_no] for i in range(len(laplacians))]
         laplacian_block_diagonal = self.make_block_diag(laplacian_layer_list)
-
+        
         if self.config.dataset.name == 'DD':
             laplacian_block_diagonal[laplacian_block_diagonal<1e-4] = 0
 
@@ -115,10 +127,6 @@ class ECC(nn.Module):
             lap_edge_idx, lap_edge_weights, v_plus_batch = self.get_ecc_conv_parameters(data, layer_no=i)
             edge_index = lap_edge_idx if i != 0 else edge_index
             edge_weight = lap_edge_weights if i != 0 else x.new_ones((edge_index.size(1), ))
-
-            if self.last_layer_fa and i == len(self.layers) - 1:
-                block_map = torch.eq(batch.unsqueeze(0), batch.unsqueeze(-1)).int()
-                edge_index, _ = torch_geometric.utils.dense_to_sparse(block_map)
 
             edge_index = edge_index.to(self.config.device)
             edge_weight = edge_weight.to(self.config.device)

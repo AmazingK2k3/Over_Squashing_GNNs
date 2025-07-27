@@ -1,6 +1,22 @@
-import os
-import json
+#
+# Copyright (C)  2020  University of Pisa
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
 import concurrent.futures
+import json
+import os
 
 from log.Logger import Logger
 
@@ -46,12 +62,21 @@ class HoldOutSelector:
 
         return best_config
 
-    def model_selection(self, dataset_getter, experiment_class, exp_path, model_configs, debug=False, other=None):
+    def model_selection(self, dataset_getter, experiment_class, exp_path, model_configs, debug=False, other=None, skip_model_selection = False):
         """
         :param experiment_class: the kind of experiment used
         :param debug:
         :return: the best performing configuration on average over the k folds. TL;DR RETURNS A MODEL, NOT AN ESTIMATE!
         """
+        if skip_model_selection:
+            print("Skipping k-fold model selection. Using config directly")
+            return {
+                'config': model_configs[0],
+                'VL_score': None,
+                'TR_score': None
+            }
+
+
         HOLDOUT_MS_FOLDER = os.path.join(exp_path, 'HOLDOUT_MS')
 
         if not os.path.exists(HOLDOUT_MS_FOLDER):
