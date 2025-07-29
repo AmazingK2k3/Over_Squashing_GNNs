@@ -100,7 +100,40 @@ def _create_fa_edges(raw_sample: Dict[str, Any], max_variable_candidates) -> np.
     # new_edges.extend([[node_id, node_id] for node_id in candidate_name_to_id.values()])
     new_edges.append([slot_node_id, slot_node_id])
 
+
     return np.array(new_edges)
+
+def _create_complement_edges(raw_sample: Dict[str, Any], max_variable_candidates, debug = False) -> np.array:
+    """ Similar to _create_fa_edges, following same format
+    raw_sample: Graph 
+    max_variable_candidates: unk
+
+    out: 
+    shape = (num_edges,2)
+    
+    """
+    graph_dict = raw_sample['ContextGraph']
+    num_nodes = len(graph_dict['NodeLabels'])
+    existing_edges = set()
+    for edge_list in graph_dict['Edges'].values():
+        for src,dst in edge_list:
+            existing_edges.add((src,dst))
+    c
+    all_edges = set((i,j) for i in range(num_nodes) for j in range(num_nodes) if i!=j)
+    complement_edges = all_edges - existing_edges
+
+    # ones in the diagonal(self-loops)
+    if debug:
+        for e in complement_edges:
+            assert e not in existing_edges, f"Edge {e} is not a complement"
+    for i in range(num_nodes):
+        complement_edges.add((i,i))
+
+    
+    return np.array(list(complement_edges),dtype = np.int32)
+
+
+
 
 def _load_single_sample(raw_sample: Dict[str, Any],
                         unsplittable_node_names: Set[str],
@@ -111,7 +144,8 @@ def _load_single_sample(raw_sample: Dict[str, Any],
 
     raw_edges = raw_sample['ContextGraph']['Edges']
 
-    fa_edges = _create_fa_edges(raw_sample, max_variable_candidates)
+    #fa_edges = _create_fa_edges(raw_sample, max_variable_candidates)
+    fa_edges  = _create_complement_edges(raw_sample, max_variable_candidates)
 
     num_nodes = len(raw_sample['ContextGraph']['NodeLabels'])
 
