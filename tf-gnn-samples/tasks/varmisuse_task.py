@@ -6,7 +6,8 @@ from typing import Any, Dict, Iterable, List, NamedTuple, Set, Iterator
 import tensorflow as tf
 import numpy as np
 from dpu_utils.utils import RichPath
-from dpu_utils.codeutils import split_identifier_into_parts, get_language_keywords
+from dpu_utils.codeutils.keywords.keywordlist import get_language_keywords
+from dpu_utils.codeutils.identifiersplitting import split_identifier_into_parts
 
 from .sparse_graph_task import Sparse_Graph_Task, DataFold, MinibatchData
 from utils import BIG_NUMBER
@@ -118,7 +119,7 @@ def _create_complement_edges(raw_sample: Dict[str, Any], max_variable_candidates
     for edge_list in graph_dict['Edges'].values():
         for src,dst in edge_list:
             existing_edges.add((src,dst))
-    c
+
     all_edges = set((i,j) for i in range(num_nodes) for j in range(num_nodes) if i!=j)
     complement_edges = all_edges - existing_edges
 
