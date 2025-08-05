@@ -33,8 +33,8 @@ from rewire_functions import (
     rewire_Graph,
     rewire_Graph_local_bridges,
     rewire_Graph_betweenness,
-    apply_rewiring_strategy)
-
+    apply_rewiring_strategy,
+    complement_graph)
 
 
 
@@ -118,7 +118,12 @@ def preprocess_dataset(dataset_path, dataset_name, use_rewired=False, rewiring_s
                 rewired_edge_index = rewire_Graph_betweenness(data, top_n=top_n)
                 data.rewired_edge_index = rewired_edge_index
                 data.edge_index = original_edge_index
-
+                
+            elif rewiring_strategy == 'complement':
+                original_edge_index = data.edge_index.clone()
+                rewired_edge_index = complement_graph(data)
+                data.rewired_edge_index = rewired_edge_index
+                data.edge_index = original_edge_index 
          
             elif rewiring_strategy == 'local_bridges':
                 original_edge_index = data.edge_index.clone()

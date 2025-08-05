@@ -10,7 +10,15 @@ from torch_geometric.utils import dense_to_sparse
 from torch_geometric.utils.convert import to_networkx
 import pickle
 
-
+def complement_graph(data):
+    """
+    Compute the complement of a graph """
+    
+    g = to_networkx(data, to_undirected=True)
+    complement_g = nx.complement(g)
+    edge_index = torch.tensor(list(complement_g.edges), dtype=torch.long).t().contiguous()
+    logging.info("Complemented graph")
+    return edge_index
 
 def rewire_Graph(data): # connects the neighbors of a bridge node to the other bridge node
     """Original bridge-based rewiring function"""
