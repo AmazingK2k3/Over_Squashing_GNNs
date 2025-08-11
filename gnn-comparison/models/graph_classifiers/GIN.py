@@ -34,7 +34,7 @@ class GIN(torch.nn.Module):
         self.convs = []
         self.linears = []
         self.rewire_all_layers = bool(config['rewire_all_layers'])
-
+        self.debug = bool(config['debug'])
         train_eps = config['train_eps']
         if config['aggregation'] == 'sum':
             self.pooling = global_add_pool
@@ -78,7 +78,9 @@ class GIN(torch.nn.Module):
         for layer in range(self.no_layers):
             if not self.rewire_all_layers and layer == self.no_layers - 1:
                 edge_index = rewired_edge_index
-                
+                if self.debug:
+                    print(f"__Rewiring at {layer-1} | Total Layers {self.no_layers-1}_")
+                    self.debug = 0
            
             if layer == 0:
                 x = self.first_h(x)

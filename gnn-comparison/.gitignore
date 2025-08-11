@@ -120,3 +120,5 @@ Old_Baselines/**
 models/.DS_Store
 .DS_Store
 test.ipynb
+results/GIN_NCI1_assessment/10_NESTED_CV
+results/GraphSAGE_NCI1_Complement_last/10_NESTED_CV

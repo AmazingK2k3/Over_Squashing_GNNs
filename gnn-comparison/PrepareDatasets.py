@@ -72,7 +72,7 @@ def get_args_dict():
     parser.add_argument('--use-rewired', action = 'store_true', 
                         default = False, help = 'Add rewired edges to the dataset.')
     parser.add_argument('--rewiring-strategy', type=str, default='bridges', 
-                    choices=['bridges', 'betweenness', 'local_bridges'],
+                    choices=['bridges', 'betweenness', 'local_bridges','complement'],
                     help='Rewiring strategy to use: bridges (default), betweenness, or local_bridges')
     parser.add_argument('--top-n-edges', type=int, default=2,
                     help='Number of top edges to rewire (for betweenness and local_bridges strategies)')
@@ -182,6 +182,6 @@ if __name__ == "__main__":
 # use it like: python PrepareDatasets.py DATA/CHEMICAL --dataset-name NCI1 --use-rewired
 
 
-# ~ python PrepareDatasets.py DATA/CHEMICAL --dataset-name NCI1 --outer-k 10 --use-rewired --rewiring-strategy local_bridges --top-n-edges 5
+# ~ python PrepareDatasets.py DATA/CHEMICAL --dataset-name NCI1 --outer-k 10 --use-rewired --rewiring-strategy complement --top-n-edges 5
 
-# python Launch_Experiments.py --config-file config_fixed.yml --dataset-name NCI1 --result-folder NCI1_RESULTS_LAST --debug
+# python Launch_Experiments.py --config-file config_fixed.yml --dataset-name NCI1 --result-folder results --debug

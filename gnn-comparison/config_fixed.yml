@@ -24,7 +24,7 @@ early_stopper:
   -
     class: Patience
     args:
-      patience: 500
+      patience: 100
       use_loss: False
 shuffle:
   - True
@@ -38,3 +38,9 @@ rewire_for_all_layers:
   - 0 # 1 means rewire all layers
 skip_model_selection:
   - 1 
+rewired_layer:
+  - 1 # 1 means rewiring happens in last layer
+ # - 2 # 2 means rewiring happens in penultimate layer
+
+debug:
+  - 1 # 1 is true
