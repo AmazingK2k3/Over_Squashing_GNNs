@@ -184,4 +184,4 @@ if __name__ == "__main__":
 
 # ~ python PrepareDatasets.py DATA/CHEMICAL --dataset-name NCI1 --outer-k 10 --use-rewired --rewiring-strategy complement --top-n-edges 5
 
-# python Launch_Experiments.py --config-file config_fixed.yml --dataset-name NCI1 --result-folder results --debug
+# python Launch_Experiments.py --config-file config_fixed_gin.yml --dataset-name NCI1 --result-folder results --debug

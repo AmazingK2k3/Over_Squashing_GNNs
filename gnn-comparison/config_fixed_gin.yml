@@ -3,11 +3,11 @@ model:
 device:
   - cuda
 batch_size:
-  - 64
+  - 32
 learning_rate:
-  - 0.01
+  - 0.001
 classifier_epochs:          
-  - 200
+  - 1000
 hidden_units:
   - [128, 128, 128, 128, 128] 
 optimizer:                 
@@ -30,7 +30,7 @@ early_stopper:
   -
     class: Patience
     args:
-      patience: 100
+      patience: 400
       use_loss: False
 shuffle:                   
   - True
