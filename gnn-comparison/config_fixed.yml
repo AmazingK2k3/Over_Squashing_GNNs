@@ -3,7 +3,7 @@ model:
 device:
   - cuda
 batch_size:
-  - 64
+  - 16
 hidden_units:
   - 128
 learning_rate:
@@ -24,7 +24,7 @@ early_stopper:
   -
     class: Patience
     args:
-      patience: 100
+      patience: 400
       use_loss: False
 shuffle:
   - True

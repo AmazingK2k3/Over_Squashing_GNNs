@@ -47,6 +47,7 @@ class GraphSAGE(nn.Module):
         # For graph classification
         self.fc1 = nn.Linear(num_layers * dim_embedding, dim_embedding)
         self.fc2 = nn.Linear(dim_embedding, dim_target)
+    
 
     def forward(self, data):
         # if rewired_edge_index is None:
@@ -58,10 +59,10 @@ class GraphSAGE(nn.Module):
         # print(rewired_edge_index)
         x, edge_index, batch, = data.x, data.edge_index, data.batch
         rewired_edge_index = data.rewired_edge_index
-
+    
         if self.use_rewired_for_all_layers:
             edge_index = rewired_edge_index
-    
+
         
         x_all = []
 
