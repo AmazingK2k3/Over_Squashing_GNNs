@@ -184,6 +184,6 @@ if __name__ == "__main__":
 # use it like: python PrepareDatasets.py DATA/CHEMICAL --dataset-name NCI1 --use-rewired
 
 
-# ~ python PrepareDatasets.py DATA/CHEMICAL --dataset-name ENZYMES --outer-k 10 --use-rewired --rewiring-strategy complement
+# ~ python PrepareDatasets.py DATA/CHEMICAL --dataset-name NCI1 --outer-k 10 --use-rewired --rewiring-strategy complement
 
 # python Launch_Experiments.py --config-file config_DGCNN_fixed.yml --dataset-name NCI1 --result-folder results --debug

@@ -85,10 +85,10 @@ class DGCNN(nn.Module):
         hidden_repres = []
 
         for i, conv in enumerate(self.convs):
-            if not self.rewire_all_layers and i == self.num_layers - 1:
+            if not self.rewire_all_layers and i == len(self.convs)- 1:
                 edge_index = rewired_edge_index
                 if self.debug:
-                    print(f"__Rewiring at {i} | Total Layers {len(self.layers)}_")
+                    print(f"__Rewiring at {i} | Total Layers {len(self.convs)}_")
                     self.debug = 0
             x = torch.tanh(conv(x, edge_index))
             hidden_repres.append(x)
