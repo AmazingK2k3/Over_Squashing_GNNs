@@ -20,7 +20,7 @@
 model:
   - DGCNN
 device:
-  - cpu
+  - cuda
 batch_size:
   - 16
 dense_dim:

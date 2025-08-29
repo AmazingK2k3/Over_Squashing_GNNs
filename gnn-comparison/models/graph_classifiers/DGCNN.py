@@ -53,7 +53,7 @@ class DGCNN(nn.Module):
         self.total_latent_dim = self.num_layers * self.embedding_dim
 
         # Add last embedding
-        self.convs.append(DGCNNConv(self.embedding_dim, 1))
+        self.convs.append(DGCNNConv(self.embedding_dim, 1)) # not a message passing layer?
         self.total_latent_dim += 1
 
         self.convs = nn.ModuleList(self.convs)
@@ -85,10 +85,10 @@ class DGCNN(nn.Module):
         hidden_repres = []
 
         for i, conv in enumerate(self.convs):
-            if not self.rewire_all_layers and i == len(self.convs)- 1:
+            if not self.rewire_all_layers and i == len(self.convs)- 2:
                 edge_index = rewired_edge_index
                 if self.debug:
-                    print(f"__Rewiring at {i} | Total Layers {len(self.convs)}_")
+                    print(f"__Rewiring at {i+1} | Total Layers {len(self.convs)}_")
                     self.debug = 0
             x = torch.tanh(conv(x, edge_index))
             hidden_repres.append(x)

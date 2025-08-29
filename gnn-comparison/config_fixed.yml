@@ -1,7 +1,7 @@
 model:
   - GraphSAGE
 device:
-  - cuda
+  - cpu
 batch_size:
   - 16
 hidden_units:
