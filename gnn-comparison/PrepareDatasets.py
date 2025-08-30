@@ -98,7 +98,14 @@ def preprocess_dataset(dataset_path, dataset_name, use_rewired=False, rewiring_s
     logging.info(f"Preprocessing started for {dataset_name}")
     
     # Use TUDataset directly like the original working code
-    dataset = TUDataset(root=dataset_path, name=dataset_name)
+    if dataset_name == "ENZYMES":
+        dataset = TUDataset(root=dataset_path, name=dataset_name, use_node_attr=True)
+        logging.info(f"ENZYMES dataset loaded with node attributes. Feature dim: {dataset.num_node_features}")
+    else: 
+        dataset = TUDataset(root=dataset_path, name=dataset_name)
+        logging.info(f"Dataset {dataset_name} loaded. Feature dim: {dataset.num_node_features}")
+
+  
     rewired_data_list = [] #-----> saves the rewired dataset.
 
     for i, data in enumerate(dataset): # data is a single graph object
@@ -134,12 +141,27 @@ def preprocess_dataset(dataset_path, dataset_name, use_rewired=False, rewiring_s
             else: # can it be without rewiring?
                 logging.warning(f"Unknown rewiring strategy: {rewiring_strategy}. Using bridges.")
                 data.edge_index = rewire_Graph(data)
+                # original_edge_index = data.edge_index.clone()  # Fix: preserve original
+                # rewired_edge_index = rewire_Graph(data)
+                # data.rewired_edge_index = rewired_edge_index
+                # data.edge_index = original_edge_index
             
             logging.info(f"Original edges: {data.edge_index.size(1)} | Strategy: {rewiring_strategy}")
             rewired_data_list.append(data) #-------> this is important 
+        else: 
+            data.rewired_edge_index = data.edge_index.clone()  # Set rewired_edge_index to original
+            rewired_data_list.append(data)
+            logging.info(f"Original edges: {data.edge_index.size(1)} | No rewiring applied.")
 
+    if rewired_data_list:
+        sample_data = rewired_data_list[0]
+        if hasattr(sample_data, 'x') and sample_data.x is not None:
+            logging.info(f"Final dataset - Feature dimensions: {sample_data.x.shape[1]}")
+        else:
+            logging.warning("Final dataset - No node features found")
     # 1st VERSION:
     #Save the dataset with a different name if rewired
+    os.makedirs(dataset_path, exist_ok=True)
     save_name = f"{dataset_name}_{rewiring_strategy}_{top_n}.pt" if use_rewired else f"{dataset_name}_processed.pt"
     torch.save(rewired_data_list, os.path.join(dataset_path, save_name))
     print(f"Dataset {dataset_name} processed & saved as {save_name} in {dataset_path}.")
