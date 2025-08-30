@@ -96,16 +96,11 @@ def preprocess_dataset(dataset_path, dataset_name, use_rewired=False, rewiring_s
      To change the rewiring(eg: rewire1 --> betweenness) only make changes to graph.py
     """
     logging.info(f"Preprocessing started for {dataset_name}")
-    
-    # Use TUDataset directly like the original working code
     if dataset_name == "ENZYMES":
         dataset = TUDataset(root=dataset_path, name=dataset_name, use_node_attr=True)
-        logging.info(f"ENZYMES dataset loaded with node attributes. Feature dim: {dataset.num_node_features}")
-    else: 
+    else:
+    # Use TUDataset directly like the original working code
         dataset = TUDataset(root=dataset_path, name=dataset_name)
-        logging.info(f"Dataset {dataset_name} loaded. Feature dim: {dataset.num_node_features}")
-
-  
     rewired_data_list = [] #-----> saves the rewired dataset.
 
     for i, data in enumerate(dataset): # data is a single graph object
@@ -204,6 +199,6 @@ if __name__ == "__main__":
 # use it like: python PrepareDatasets.py DATA/CHEMICAL --dataset-name NCI1 --use-rewired
 
 
-# ~ python PrepareDatasets.py DATA/CHEMICAL --dataset-name NCI1 --outer-k 10 --use-rewired --rewiring-strategy complement --top-n-edges 5
+# ~ python PrepareDatasets.py DATA/CHEMICAL --dataset-name NCI1 --outer-k 10 --use-rewired --rewiring-strategy complement
 
-# python Launch_Experiments.py --config-file config_fixed_gin.yml --dataset-name NCI1 --result-folder results --debug
+# python Launch_Experiments.py --config-file config_DGCNN_fixed.yml --dataset-name NCI1 --result-folder results --debug

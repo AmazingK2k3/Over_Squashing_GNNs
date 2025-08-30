@@ -16,18 +16,19 @@
 
 # CHANGES MADE:
   # added config for "use_rewired_for_all_layers"
+
 model:
-  - GraphSAGE
+  - DGCNN
 device:
-  - cpu
+  - cuda
 batch_size:
-  - 32
+  - 16
+dense_dim:
+  - 128
+k:
+  - 0.9
 learning_rate:
   - 0.0001
-  - 0.01
-  - 0.001
-l2:
-  - 0.
 classifier_epochs:
   - 1000
 optimizer:
@@ -42,22 +43,23 @@ early_stopper:
   -
     class: Patience
     args:
-      patience: 500
+      patience: 400
       use_loss: False
-  -
-    class: Patience
-    args:
-      patience: 500
-      use_loss: True
+
 shuffle:
   - True
-dim_embedding:
-  - 32
+l2:
+  - 0.
+embedding_dim:
   - 64
 num_layers:
-  - 3
-  - 5
-aggregation:
-  - add
-  - max
-  - mean
+  - 4
+rewire_for_all_layers:
+  - 0 # 1 means rewire all layers
+skip_model_selection:
+  - 1 
+rewired_layer:
+  - 1 # 1 means rewiring happens in last layer
+ # - 2 # 2 means rewiring happens in penultimate layer
+debug:
+  - 1 # 1 is true

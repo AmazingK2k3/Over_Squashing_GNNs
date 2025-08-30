@@ -43,6 +43,8 @@ class DGCNN(nn.Module):
         self.k = self.ks[config.dataset.name][str(config['k'])]
         self.embedding_dim = config['embedding_dim']
         self.num_layers = config['num_layers']
+        self.rewire_all_layers = bool(config['rewire_for_all_layers'])
+        self.debug = bool(config['debug'])
 
         self.convs = []
         for layer in range(self.num_layers):
@@ -51,7 +53,7 @@ class DGCNN(nn.Module):
         self.total_latent_dim = self.num_layers * self.embedding_dim
 
         # Add last embedding
-        self.convs.append(DGCNNConv(self.embedding_dim, 1))
+        self.convs.append(DGCNNConv(self.embedding_dim, 1)) # not a message passing layer?
         self.total_latent_dim += 1
 
         self.convs = nn.ModuleList(self.convs)
@@ -73,11 +75,21 @@ class DGCNN(nn.Module):
     def forward(self, data):
         # Implement Equation 4.2 of the paper i.e. concat all layers' graph representations and apply linear model
         # note: this can be decomposed in one smaller linear model per layer
-        x, edge_index, batch = data.x, data.edge_index, data.batch
+        x, batch = data.x, data.batch
+        rewired_edge_index = data.rewired_edge_index  
+        if self.rewire_all_layers:
+            edge_index = rewired_edge_index
+        else:
+            edge_index = data.edge_index
 
         hidden_repres = []
 
-        for conv in self.convs:
+        for i, conv in enumerate(self.convs):
+            if not self.rewire_all_layers and i == len(self.convs)- 2:
+                edge_index = rewired_edge_index
+                if self.debug:
+                    print(f"__Rewiring at {i+1} | Total Layers {len(self.convs)}_")
+                    self.debug = 0
             x = torch.tanh(conv(x, edge_index))
             hidden_repres.append(x)
 
