@@ -19,7 +19,7 @@ model:
 device:
   - cuda
 batch_size:
-  - 50
+  - 16
 dense_dim:
   - 128
 k:
@@ -40,7 +40,7 @@ early_stopper:
   -
     class: Patience
     args:
-      patience: 400
+      patience: 500
       use_loss: False
 shuffle:
   - True

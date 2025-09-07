@@ -58,9 +58,9 @@ class SAGEConvolutions(nn.Module):
         batch_size, num_nodes, in_channels = x.size()
 
         x0 = x
-        x1 = self.bn(1, F.relu(self.conv1(x0, adj, mask, add_loop=False)))
-        x2 = self.bn(2, F.relu(self.conv2(x1, adj, mask, add_loop=False)))
-        x3 = self.conv3(x2, adj, mask, add_loop=False)
+        x1 = self.bn(1, F.relu(self.conv1(x0, adj, mask)))
+        x2 = self.bn(2, F.relu(self.conv2(x1, adj, mask)))
+        x3 = self.conv3(x2, adj, mask)
 
         x = torch.cat([x1, x2, x3], dim=-1)
 

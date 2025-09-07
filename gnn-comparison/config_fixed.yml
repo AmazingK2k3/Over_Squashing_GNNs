@@ -1,7 +1,7 @@
 model:
   - GraphSAGE
 device:
-  - cpu
+  - cuda
 batch_size:
   - 16
 hidden_units:
@@ -24,7 +24,7 @@ early_stopper:
   -
     class: Patience
     args:
-      patience: 400
+      patience: 500
       use_loss: False
 shuffle:
   - True
@@ -39,7 +39,7 @@ rewire_for_all_layers:
 skip_model_selection:
   - 1 
 rewired_layer:
-  - 1 # 1 means rewiring happens in last layer
+  - 2 # 1 means rewiring happens in last layer
  # - 2 # 2 means rewiring happens in penultimate layer
 
 debug:
