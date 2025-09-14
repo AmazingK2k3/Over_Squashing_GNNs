@@ -10,14 +10,25 @@ from torch_geometric.utils import dense_to_sparse
 from torch_geometric.utils.convert import to_networkx
 import pickle
 
-def complement_graph(data):
+def complement_graph(data,add_self_loops = False):
     """
     Compute the complement of a graph """
     
     g = to_networkx(data, to_undirected=True)
     complement_g = nx.complement(g)
     edge_index = torch.tensor(list(complement_g.edges), dtype=torch.long).t().contiguous()
-    logging.info("Complemented graph")
+    flag = ""
+
+
+    if add_self_loops:
+        num_nodes = data.num_nodes
+        self_loops = torch.arange(num_nodes, dtype=torch.long)
+        self_loops = torch.stack([self_loops, self_loops], dim=0)  # shape [2, num_nodes]
+        edge_index = torch.cat([edge_index, self_loops], dim=1)
+        flag = "self_loops added"
+
+    logging.info("Complemented graph ")
+    print(flag)
     return edge_index
 
 def rewire_Graph(data): # connects the neighbors of a bridge node to the other bridge node
@@ -258,12 +269,15 @@ def apply_rewiring_strategy(data, strategy='bridges', top_n=2):
         logging.warning("Unknown rewiring strategy: %s. Using original graph.", strategy)
         return data.edge_index
 # Not used currently
-def partial_complement(edge_index, complement_edge_index, p=0.5):
+def partial_complement(edge_index, complement_edge_index, p=0.25):
     # edge_index: [2, E]
     # complement_edge_index: [2, E_c]
-    E_c = complement_edge_index.size(1)
-    n_sample = int(p * E_c)
-    perm = torch.randperm(E_c)[:n_sample]
-    sampled_complement = complement_edge_index[:, perm]
-    mixed_edges = torch.cat([edge_index, sampled_complement], dim=1)
-    return mixed_edges
+    if complement_edge_index.shape[0] == 0:
+        return edge_index
+    else:
+        E_c = complement_edge_index.size(1)
+        n_sample = int(p * E_c)
+        perm = torch.randperm(E_c)[:n_sample]
+        sampled_complement = complement_edge_index[:, perm]
+        mixed_edges = torch.cat([edge_index, sampled_complement], dim=1)
+        return mixed_edges

@@ -34,7 +34,8 @@ from rewire_functions import (
     rewire_Graph_local_bridges,
     rewire_Graph_betweenness,
     apply_rewiring_strategy,
-    complement_graph)
+    complement_graph,
+    partial_complement)
 
 
 
@@ -72,7 +73,7 @@ def get_args_dict():
     parser.add_argument('--use-rewired', action = 'store_true', 
                         default = False, help = 'Add rewired edges to the dataset.')
     parser.add_argument('--rewiring-strategy', type=str, default='bridges', 
-                    choices=['bridges', 'betweenness', 'local_bridges','complement'],
+                    choices=['bridges', 'betweenness', 'local_bridges','complement','partial_complement'],
                     help='Rewiring strategy to use: bridges (default), betweenness, or local_bridges')
     parser.add_argument('--top-n-edges', type=int, default=2,
                     help='Number of top edges to rewire (for betweenness and local_bridges strategies)')
@@ -126,12 +127,27 @@ def preprocess_dataset(dataset_path, dataset_name, use_rewired=False, rewiring_s
                 rewired_edge_index = complement_graph(data)
                 data.rewired_edge_index = rewired_edge_index
                 data.edge_index = original_edge_index 
+     
          
             elif rewiring_strategy == 'local_bridges':
                 original_edge_index = data.edge_index.clone()
                 rewired_edge_index = rewire_Graph_local_bridges(data, top_n=top_n)
                 data.rewired_edge_index = rewired_edge_index
                 data.edge_index = original_edge_index
+
+            elif rewiring_strategy == 'partial_complement':
+
+
+                original_edge_index = data.edge_index.clone()
+                rewired_edge_index = complement_graph(data)
+                data.rewired_edge_index = rewired_edge_index
+                data.edge_index = original_edge_index 
+                print("edge_index.shape:", original_edge_index.shape)
+                print("complement_edge_index.shape:", rewired_edge_index.shape)
+                pc = partial_complement(original_edge_index, rewired_edge_index, p=0.25)
+                data.partial_edge_index = pc
+
+                
                 
             else: # can it be without rewiring?
                 logging.warning(f"Unknown rewiring strategy: {rewiring_strategy}. Using bridges.")
@@ -199,6 +215,6 @@ if __name__ == "__main__":
 # use it like: python PrepareDatasets.py DATA/CHEMICAL --dataset-name NCI1 --use-rewired
 
 
-# ~ python PrepareDatasets.py DATA/CHEMICAL --dataset-name NCI1 --outer-k 10 --use-rewired --rewiring-strategy complement
+# ~ python PrepareDatasets.py DATA/CHEMICAL --dataset-name NCI1 --outer-k 10 --use-rewired --rewiring-strategy partial_complement
 
-# python Launch_Experiments.py --config-file config_DGCNN_fixed.yml --dataset-name NCI1 --result-folder results --debug
+# python Launch_Experiments.py --config-file config_fixed_gin.yml --dataset-name NCI1 --result-folder results --debug

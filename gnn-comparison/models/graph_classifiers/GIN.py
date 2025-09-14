@@ -67,20 +67,16 @@ class GIN(torch.nn.Module):
         x, batch = data.x, data.batch
         rewired_edge_index = data.rewired_edge_index
 
-        if self.rewire_all_layers:
-            edge_index = rewired_edge_index
-        else:
-            edge_index = data.edge_index
-            
-
         out = 0
 
         for layer in range(self.no_layers):
-            if not self.rewire_all_layers and layer == self.no_layers - 1:
+            if not self.rewire_all_layers and layer == self.no_layers - 2:
                 edge_index = rewired_edge_index
                 if self.debug:
-                    print(f"__Rewiring at {layer-1} | Total Layers {self.no_layers-1}_")
+                    print(f"__Rewiring at {self.no_layers-2} | Total Layers {self.no_layers}_")
                     self.debug = 0
+            else:
+                edge_index = data.edge_index
            
             if layer == 0:
                 x = self.first_h(x)

@@ -77,15 +77,11 @@ class DGCNN(nn.Module):
         # note: this can be decomposed in one smaller linear model per layer
         x, batch = data.x, data.batch
         rewired_edge_index = data.rewired_edge_index  
-        if self.rewire_all_layers:
-            edge_index = rewired_edge_index
-        else:
-            edge_index = data.edge_index
-
+        edge_index = data.edge_index
         hidden_repres = []
 
         for i, conv in enumerate(self.convs):
-            if not self.rewire_all_layers and i == len(self.convs)- 2:
+            if not self.rewire_all_layers and i == len(self.convs)- 1:
                 edge_index = rewired_edge_index
                 if self.debug:
                     print(f"__Rewiring at {i+1} | Total Layers {len(self.convs)}_")
@@ -151,3 +147,4 @@ class DGCNNConv(MessagePassing):
     def __repr__(self):
         return '{}({}, {})'.format(self.__class__.__name__, self.in_channels,
                                    self.out_channels)
+

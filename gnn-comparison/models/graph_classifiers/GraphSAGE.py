@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
+from errno import EDEADLK
 import torch
 from torch._C import NoneType
 import torch.nn.functional as F
@@ -57,22 +58,34 @@ class GraphSAGE(nn.Module):
         
         # rewired_edge_index = data.rewired_edge_index
         # print(rewired_edge_index)
-        x, edge_index, batch, = data.x, data.edge_index, data.batch
+        x, batch, = data.x, data.batch
         rewired_edge_index = data.rewired_edge_index
-    
-        if self.use_rewired_for_all_layers:
-            edge_index = rewired_edge_index
-
-        
+      
         x_all = []
 
         for i, layer in enumerate(self.layers):
 
-            if not self.use_rewired_for_all_layers and i == len(self.layers) - self.rewired_layer:
+            # if not self.use_rewired_for_all_layers and i == len(self.layers) - self.rewired_layer:
+            if not self.use_rewired_for_all_layers and i == len(self.layers) - self.rewired_layer and rewired_edge_index.shape[0]>0:
                 edge_index = rewired_edge_index
                 if self.debug:
                     print(f"__Rewiring at {i} | Total Layers {len(self.layers)}_")
+                    print("total layers",len(self.layers))
                     self.debug = 0
+
+            # if not self.use_rewired_for_all_layers and i == len(self.layers) - 1:
+            #     edge_index = rewired_edge_index
+            #     if self.debug:
+            #         print(f"_Last layerRewiring at {i+1} | Total Layers {len(self.layers)}_")
+            #         self.debug = 0
+            # elif not self.use_rewired_for_all_layers and i == len(self.layers) - 2:
+            #     edge_index = data.partial_edge_index
+            #     if self.debug:
+            #         print(f"__Partial Rewiring at {i+1} | Total Layers {len(self.layers)}_")
+                    
+            else:
+                edge_index = data.edge_index
+
                 
             x = layer(x, edge_index)
             if self.aggregation == 'max':

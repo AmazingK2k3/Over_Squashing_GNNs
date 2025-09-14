@@ -30,6 +30,7 @@ class Data(data.Data):
                  laplacians=None,
                  v_plus=None,
                  rewired_edge_index = None,
+                partial_edge_index = None,
                  **kwargs):
 
         additional_fields = {
@@ -39,7 +40,8 @@ class Data(data.Data):
             'o_outs': o_outs,
             'laplacians': laplacians,
             'v_plus': v_plus,
-            'rewired_edge_index':rewired_edge_index
+            'rewired_edge_index':rewired_edge_index,
+            'partial_edge_index': partial_edge_index
 
         }
         super().__init__(x, edge_index, edge_attr, y, **additional_fields)
@@ -65,7 +67,8 @@ class Batch(data.Batch):
                                   g_outs=d.g_outs if hasattr(d, 'g_outs') else None,
                                   e_outs=d.e_outs if hasattr(d, 'e_outs') else None,
                                   o_outs=d.o_outs if hasattr(d, 'o_outs') else None,
-                                  rewired_edge_index = d.rewired_edge_index if hasattr(d, 'rewired_edge_index') else None
+                                  rewired_edge_index = d.rewired_edge_index if hasattr(d, 'rewired_edge_index') else None,
+                                  partial_edge_index = d.partial_edge_index if hasattr(d, 'partial_edge_index') else None
                              ))
 
         batch = data.Batch.from_data_list(copy_data, follow_batch=follow_batch)
