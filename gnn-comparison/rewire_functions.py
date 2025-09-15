@@ -10,7 +10,7 @@ from torch_geometric.utils import dense_to_sparse
 from torch_geometric.utils.convert import to_networkx
 import pickle
 
-def complement_graph(data,add_self_loops = False):
+def complement_graph(data,add_self_loops = True):
     """
     Compute the complement of a graph """
     

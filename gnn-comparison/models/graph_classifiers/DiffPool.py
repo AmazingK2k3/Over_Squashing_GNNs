@@ -106,6 +106,9 @@ class DiffPool(nn.Module):
         gnn_dim_hidden = config['gnn_dim_hidden']  # embedding size of first 2 SAGE convolutions
         dim_embedding = config['dim_embedding']  # embedding size of 3rd SAGE convolutions (eq. 5, dim of Z)
         dim_embedding_MLP = config['dim_embedding_MLP']  # hidden neurons of last 2 MLP layers
+        self.rewire_all_layers = bool(config['rewire_for_all_layers'])
+        self.rewired_layer = config['rewired_layer']
+        self.debug = config['debug']
 
         self.num_diffpool_layers = num_diffpool_layers
 
@@ -135,9 +138,9 @@ class DiffPool(nn.Module):
         self.lin2 = nn.Linear(dim_embedding_MLP, dim_target)
 
     def forward(self, data):
-        x, edge_index, batch = data.x, data.edge_index, data.batch
+        x, og_edge_index, batch = data.x, data.edge_index, data.batch
         x, mask = to_dense_batch(x, batch=batch)
-        adj = to_dense_adj(edge_index, batch=batch)
+        og_adj = to_dense_adj(og_edge_index, batch=batch)
         # data = ToDense(data.num_nodes)(data)
         # TODO describe mask shape and how batching works
 
@@ -147,6 +150,16 @@ class DiffPool(nn.Module):
         for i in range(self.num_diffpool_layers):
             if i != 0:
                 mask = None
+
+            if not self.rewire_all_layers and i == self.num_diffpool_layers - self.rewired_layer:
+                edge_index = data.rewired_edge_index
+                adj = to_dense_adj(edge_index, batch=batch)
+                if self.debug:
+                    print(f"__Rewiring at {i+1} | Total Layers {self.num_diffpool_layers}_")
+                    self.debug = 0
+
+            else:
+                adj = og_adj
 
             x, adj, l, e = self.diffpool_layers[i](x, adj, mask)  # x has shape (batch, MAX_no_nodes, feature_size)
             x_all.append(torch.max(x, dim=1)[0])

@@ -3,7 +3,7 @@ model:
 device:
   - cuda
 batch_size:
-  - 16
+  - 32
 learning_rate:
   - 0.001
 classifier_epochs:          
@@ -39,7 +39,7 @@ resume:
 rewire_all_layers:
   - 0 # 0 means last layer rewiring
 rewired_layer:
-  - 2 # 1 means rewiring happens in last layer
+  - 1 # 1 means rewiring happens in last layer
  # 2 means rewiring happens in penultimate layer
 debug:
   - 1

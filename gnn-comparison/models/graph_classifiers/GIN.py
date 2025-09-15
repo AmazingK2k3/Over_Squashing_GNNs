@@ -34,6 +34,7 @@ class GIN(torch.nn.Module):
         self.convs = []
         self.linears = []
         self.rewire_all_layers = bool(config['rewire_all_layers'])
+        self.rewired_layer = config['rewired_layer']
         self.debug = bool(config['debug'])
         train_eps = config['train_eps']
         if config['aggregation'] == 'sum':
@@ -70,10 +71,10 @@ class GIN(torch.nn.Module):
         out = 0
 
         for layer in range(self.no_layers):
-            if not self.rewire_all_layers and layer == self.no_layers - 2:
+            if not self.rewire_all_layers and layer == self.no_layers - self.rewired_layer:
                 edge_index = rewired_edge_index
                 if self.debug:
-                    print(f"__Rewiring at {self.no_layers-2} | Total Layers {self.no_layers}_")
+                    print(f"__Rewiring at {self.no_layers-self.rewired_layer} | Total Layers {self.no_layers}_")
                     self.debug = 0
             else:
                 edge_index = data.edge_index

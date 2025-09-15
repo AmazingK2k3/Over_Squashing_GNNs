@@ -45,6 +45,7 @@ class DGCNN(nn.Module):
         self.num_layers = config['num_layers']
         self.rewire_all_layers = bool(config['rewire_for_all_layers'])
         self.debug = bool(config['debug'])
+        self.rewired_layer = config['rewired_layer']
 
         self.convs = []
         for layer in range(self.num_layers):
@@ -77,15 +78,17 @@ class DGCNN(nn.Module):
         # note: this can be decomposed in one smaller linear model per layer
         x, batch = data.x, data.batch
         rewired_edge_index = data.rewired_edge_index  
-        edge_index = data.edge_index
+        og_edge_index = data.edge_index
         hidden_repres = []
 
         for i, conv in enumerate(self.convs):
-            if not self.rewire_all_layers and i == len(self.convs)- 1:
+            if not self.rewire_all_layers and i == len(self.convs)- self.rewired_layer:
                 edge_index = rewired_edge_index
                 if self.debug:
                     print(f"__Rewiring at {i+1} | Total Layers {len(self.convs)}_")
                     self.debug = 0
+            else:
+                edge_index = og_edge_index
             x = torch.tanh(conv(x, edge_index))
             hidden_repres.append(x)
 
