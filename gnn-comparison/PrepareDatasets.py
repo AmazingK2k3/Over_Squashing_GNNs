@@ -215,6 +215,9 @@ if __name__ == "__main__":
 # use it like: python PrepareDatasets.py DATA/CHEMICAL --dataset-name NCI1 --use-rewired
 
 
-# ~ python PrepareDatasets.py DATA/CHEMICAL --dataset-name ENZYMES --outer-k 10 --use-rewired --rewiring-strategy complement
+# ~ python PrepareDatasets.py DATA/SOCIAL_1 --dataset-name REDDIT-BINARY --outer-k 10 --use-rewired --rewiring-strategy complement
 
-# python Launch_Experiments.py --config-file config_DiffPool_fixed.yml --dataset-name ENZYMES --result-folder results --debug
+# python Launch_Experiments.py --config-file config_fixed_gin.yml --dataset-name REDDIT-BINARY --result-folder results --debug
+
+# For Social datasets with no node features:
+#python PrepareDatasets.py DATA/SOCIAL_1 --dataset-name <name> --use-one --outer-k 10
