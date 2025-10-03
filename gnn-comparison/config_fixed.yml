@@ -39,7 +39,7 @@ rewire_for_all_layers:
 skip_model_selection:
   - 1 
 rewired_layer:
-  - 2 # 1 means rewiring happens in last layer
+  - 1 # 1 means rewiring happens in last layer
  # - 2 # 2 means rewiring happens in penultimate layer
 
 debug:
