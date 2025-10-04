@@ -89,7 +89,7 @@ from utils.custom_data import CustomData
 #             return self.num_nodes
 #         return super().__inc__(key,value
 
-def preprocess_dataset(dataset_path, dataset_name, use_rewired=False, rewiring_strategy='bridges', top_n=2):
+def preprocess_dataset(dataset_path, dataset_name, use_rewired=False, rewiring_strategy='bridges', top_n=2, use_one=False, use_node_degree=False):
     """
     Preprocess the dataset and optionally add rewired edges.
     Makes sure:
@@ -100,17 +100,35 @@ def preprocess_dataset(dataset_path, dataset_name, use_rewired=False, rewiring_s
     if dataset_name == "ENZYMES":
         dataset = TUDataset(root=dataset_path, name=dataset_name, use_node_attr=True)
     else:
-    # Use TUDataset directly like the original working code
         dataset = TUDataset(root=dataset_path, name=dataset_name)
-    rewired_data_list = [] #-----> saves the rewired dataset.
+    
+    rewired_data_list = []
 
-    for i, data in enumerate(dataset): # data is a single graph object
+    for i, data in enumerate(dataset):
         logging.info(f"Processing graph {i + 1}/{len(dataset)} in dataset {dataset_name}")
         
-        # data_dict = data.to_dict()
+        # CRITICAL FIX: Handle missing node features based on flags
+        if data.x is None or data.x.numel() == 0:
+            if use_one:
+                # Add dummy features [1] for each node
+                num_nodes = data.num_nodes if data.num_nodes is not None else 0
+                data.x = torch.ones(num_nodes, 1, dtype=torch.float)
+                logging.info(f"Added ones as node features with shape {data.x.shape}")
+            elif use_node_degree:
+                # Use node degree as features
+                from torch_geometric.utils import degree
+                row, _ = data.edge_index
+                deg = degree(row, data.num_nodes, dtype=torch.float)
+                data.x = deg.view(-1, 1)
+                logging.info(f"Added degree as node features with shape {data.x.shape}")
+            else:
+                # Default: use ones if no features exist
+                num_nodes = data.num_nodes if data.num_nodes is not None else 0
+                data.x = torch.ones(num_nodes, 1, dtype=torch.float)
+                logging.warning(f"No features specified but none exist. Defaulting to ones with shape {data.x.shape}")
+        
         if use_rewired:
- 
-            if rewiring_strategy == 'bridges': # made changes to accomodate last layer rewiring 
+            if rewiring_strategy == 'bridges':
                 original_edge_index = data.edge_index.clone()
                 rewired_edge_index = rewire_Graph(data)
                 data.rewired_edge_index = rewired_edge_index
@@ -128,7 +146,6 @@ def preprocess_dataset(dataset_path, dataset_name, use_rewired=False, rewiring_s
                 data.rewired_edge_index = rewired_edge_index
                 data.edge_index = original_edge_index 
      
-         
             elif rewiring_strategy == 'local_bridges':
                 original_edge_index = data.edge_index.clone()
                 rewired_edge_index = rewire_Graph_local_bridges(data, top_n=top_n)
@@ -136,8 +153,6 @@ def preprocess_dataset(dataset_path, dataset_name, use_rewired=False, rewiring_s
                 data.edge_index = original_edge_index
 
             elif rewiring_strategy == 'partial_complement':
-
-
                 original_edge_index = data.edge_index.clone()
                 rewired_edge_index = complement_graph(data)
                 data.rewired_edge_index = rewired_edge_index
@@ -146,21 +161,18 @@ def preprocess_dataset(dataset_path, dataset_name, use_rewired=False, rewiring_s
                 print("complement_edge_index.shape:", rewired_edge_index.shape)
                 pc = partial_complement(original_edge_index, rewired_edge_index, p=0.25)
                 data.partial_edge_index = pc
-
                 
-                
-            else: # can it be without rewiring?
+            else:
                 logging.warning(f"Unknown rewiring strategy: {rewiring_strategy}. Using bridges.")
-                data.edge_index = rewire_Graph(data)
-                # original_edge_index = data.edge_index.clone()  # Fix: preserve original
-                # rewired_edge_index = rewire_Graph(data)
-                # data.rewired_edge_index = rewired_edge_index
-                # data.edge_index = original_edge_index
+                original_edge_index = data.edge_index.clone()
+                rewired_edge_index = rewire_Graph(data)
+                data.rewired_edge_index = rewired_edge_index
+                data.edge_index = original_edge_index
             
-            logging.info(f"Original edges: {data.edge_index.size(1)} | Strategy: {rewiring_strategy}")
-            rewired_data_list.append(data) #-------> this is important 
+            logging.info(f"Original edges: {data.edge_index.size(1)} | Rewired edges: {data.rewired_edge_index.size(1)} | Strategy: {rewiring_strategy}")
+            rewired_data_list.append(data)
         else: 
-            data.rewired_edge_index = data.edge_index.clone()  # Set rewired_edge_index to original
+            data.rewired_edge_index = data.edge_index.clone()
             rewired_data_list.append(data)
             logging.info(f"Original edges: {data.edge_index.size(1)} | No rewiring applied.")
 
@@ -170,19 +182,11 @@ def preprocess_dataset(dataset_path, dataset_name, use_rewired=False, rewiring_s
             logging.info(f"Final dataset - Feature dimensions: {sample_data.x.shape[1]}")
         else:
             logging.warning("Final dataset - No node features found")
-    # 1st VERSION:
-    #Save the dataset with a different name if rewired
+    
     os.makedirs(dataset_path, exist_ok=True)
     save_name = f"{dataset_name}_{rewiring_strategy}_{top_n}.pt" if use_rewired else f"{dataset_name}_processed.pt"
     torch.save(rewired_data_list, os.path.join(dataset_path, save_name))
     print(f"Dataset {dataset_name} processed & saved as {save_name} in {dataset_path}.")
-
-    # # # # <DATA, SLICES>. VERSION
-    
-    # data,slices = InMemoryDataset.collate(rewired_data_list)
-    # save_name = f"{dataset_name}_{rewiring_strategy}_slices.pt" if use_rewired else f"{dataset_name}_processed.pt"
-    # torch.save((data,slices),os.path.join(dataset_path,save_name))
-
 
 
 if __name__ == "__main__":
@@ -193,16 +197,20 @@ if __name__ == "__main__":
     dataset_name = args_dict['dataset_name']
     dataset_path = args_dict['DATA_DIR']
     use_rewired = args_dict['use_rewired']
-    rewiring_strategy = args_dict.get('rewiring_strategy', 'bridges')  # Use get() for safety
-    top_n = args_dict.get('top_n_edges', 2)  # Use get() for safety
+    rewiring_strategy = args_dict.get('rewiring_strategy', 'bridges')
+    top_n = args_dict.get('top_n_edges', 2)
+    use_one = args_dict.get('use_one', False)  # FIXED: Now actually using this parameter
+    use_node_degree = args_dict.get('use_node_degree', False)  # FIXED: Now actually using this parameter
 
     if dataset_name == 'all':
         for name in DATASETS:
             preprocess_dataset(dataset_path, name, use_rewired=use_rewired, 
-                             rewiring_strategy=rewiring_strategy, top_n=top_n)
+                             rewiring_strategy=rewiring_strategy, top_n=top_n,
+                             use_one=use_one, use_node_degree=use_node_degree)  # FIXED: Pass the flags
     else:
         preprocess_dataset(dataset_path, dataset_name, use_rewired=use_rewired,
-                         rewiring_strategy=rewiring_strategy, top_n=top_n)
+                         rewiring_strategy=rewiring_strategy, top_n=top_n,
+                         use_one=use_one, use_node_degree=use_node_degree)  # FIXED: Pass the flags
 
     # parser = argparse.ArgumentParser(description="Preprocess datasets.")
     # parser.add_argument("dataset_path", type=str, help="Path to the dataset folder.")
