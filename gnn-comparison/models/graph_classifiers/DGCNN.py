@@ -82,7 +82,7 @@ class DGCNN(nn.Module):
         hidden_repres = []
 
         for i, conv in enumerate(self.convs):
-            if not self.rewire_all_layers and i == len(self.convs)- self.rewired_layer:
+            if not self.rewire_all_layers and i == len(self.convs) - self.rewired_layer:
                 edge_index = rewired_edge_index
                 if self.debug:
                     print(f"__Rewiring at {i+1} | Total Layers {len(self.convs)}_")

@@ -22,7 +22,7 @@ model:
 device:
   - cuda
 batch_size:
-  - 16
+  - 64
 dense_dim:
   - 128
 k:

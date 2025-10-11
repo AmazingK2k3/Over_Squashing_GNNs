@@ -3,7 +3,7 @@ model:
 device:
   - cuda
 batch_size:
-  - 32
+  - 8
 learning_rate:
   - 0.001
 classifier_epochs:          
