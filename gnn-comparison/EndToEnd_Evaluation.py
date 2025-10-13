@@ -23,6 +23,12 @@ from evaluation.model_selection.HoldOutSelector import HoldOutSelector
 from evaluation.risk_assessment.K_Fold_Assessment import KFoldAssessment
 from experiments.EndToEndExperiment import EndToEndExperiment
 
+from datasets.manager import (Proteins, 
+NCI1, 
+Enzymes, 
+IMDBBinary, 
+RedditBinary,
+IMDBMulti,Collab)
 
 def main(config_file, dataset_name,
          outer_k, outer_processes, inner_k, inner_processes, result_folder, debug=False):
@@ -35,8 +41,32 @@ def main(config_file, dataset_name,
 
     model_configurations = Grid(config_file, dataset_name)
     model_configuration = Config(**model_configurations[0])
+    
 
-    exp_path = os.path.join(result_folder, f'{model_configuration.exp_name}_assessment')
+    dataset_class_map = {
+    "PROTEINS": Proteins,
+    "ENZYMES": Enzymes,
+    "NCI1": NCI1,
+    "REDDIT-BINARY": RedditBinary,
+    "IMDB-BINARY": IMDBBinary,
+    "IMDB-MULTI": IMDBMulti,
+    "COLLAB": Collab
+}
+    dataset_class = dataset_class_map.get(dataset_name.upper())
+
+    gdm = dataset_class()
+    print(dataset_name)
+    metadata = getattr(gdm, "metadata", {})
+    print(metadata)
+    # you can add anything you like here manually, for example:
+    metadata["rewiring_method"] = metadata.get("rewiring_strategy", "none")
+    metadata["self_loops_added"] = metadata.get("add_self_loops", False)
+    use_one = metadata.get("use__one", False)
+    use_node_degree = metadata.get("use_node_degree", False)
+    
+
+    exp_path = os.path.join(result_folder, f'{model_configuration.exp_name}_{metadata["rewiring_method"]}_self_loops_{metadata["self_loops_added"]}'  + (f'_use_one' if use_one else '')
+    + (f'_use_node_degree' if use_node_degree else ''))
 
     model_selector = HoldOutSelector(max_processes=inner_processes)
     risk_assesser = KFoldAssessment(outer_k, model_selector, exp_path, model_configurations,

@@ -41,7 +41,7 @@ class GraphDatasetManager:
     def __init__(self, kfold_class=StratifiedKFold, outer_k=10, inner_k=None, seed=42, holdout_test_size=0.1,
                  use_node_degree=False, use_node_attrs=False, use_one=False, precompute_kron_indices=False,
                  max_reductions=10, DATA_DIR='DATA'):
-
+       
         self.root_dir = Path(DATA_DIR) / self.name
         self.kfold_class = kfold_class
         self.holdout_test_size = holdout_test_size
@@ -70,8 +70,18 @@ class GraphDatasetManager:
                 os.makedirs(self.processed_dir)
             self._process()
 
-        self.dataset = GraphDataset(torch.load(
-            self.processed_dir / f"{self.name}.pt"))
+        # Load dataset (compatible with metadata-aware .pt files)
+        loaded = torch.load(self.processed_dir / f"{self.name}.pt")
+
+        if isinstance(loaded, dict) and "data_list" in loaded:
+            # New format: dict with metadata
+            self.dataset = GraphDataset(loaded["data_list"])
+            self.metadata = loaded.get("metadata", {})
+        else:
+            # Old format: plain list of Data objects
+            self.dataset = GraphDataset(loaded)
+            self.metadata = {}
+
 
         splits_filename = self.processed_dir / f"{self.name}_splits.json"
         if not splits_filename.exists():

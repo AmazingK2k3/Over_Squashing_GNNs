@@ -16,9 +16,14 @@ def complement_graph(data,add_self_loops = False):
     
     g = to_networkx(data, to_undirected=True)
     complement_g = nx.complement(g)
-    edge_index = torch.tensor(list(complement_g.edges), dtype=torch.long).t().contiguous()
-    flag = ""
+    edges = list(complement_g.edges)
 
+    if len(edges) == 0:
+        # empty complement (fully connected graph)
+        edge_index = torch.empty((2, 0), dtype=torch.long)
+    else:
+        edge_index = torch.tensor(edges, dtype=torch.long).t().contiguous()
+    flag = ""
 
     if add_self_loops:
         num_nodes = data.num_nodes
@@ -29,7 +34,7 @@ def complement_graph(data,add_self_loops = False):
 
     logging.info("Complemented graph ")
     print(flag)
-    return edge_index
+    return edge_index, add_self_loops
 
 def rewire_Graph(data): # connects the neighbors of a bridge node to the other bridge node
     """Original bridge-based rewiring function"""

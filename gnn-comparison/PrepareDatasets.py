@@ -142,7 +142,7 @@ def preprocess_dataset(dataset_path, dataset_name, use_rewired=False, rewiring_s
                 
             elif rewiring_strategy == 'complement':
                 original_edge_index = data.edge_index.clone()
-                rewired_edge_index = complement_graph(data)
+                rewired_edge_index, self_loops_flag = complement_graph(data)
                 data.rewired_edge_index = rewired_edge_index
                 data.edge_index = original_edge_index 
      
@@ -185,7 +185,16 @@ def preprocess_dataset(dataset_path, dataset_name, use_rewired=False, rewiring_s
     
     os.makedirs(dataset_path, exist_ok=True)
     save_name = f"{dataset_name}_{rewiring_strategy}_{top_n}.pt" if use_rewired else f"{dataset_name}_processed.pt"
-    torch.save(rewired_data_list, os.path.join(dataset_path, save_name))
+    metadata = {
+        "rewiring_strategy": rewiring_strategy,
+        "add_self_loops": self_loops_flag,
+        "use__one": use_one,
+        "use_node_degree": use_node_degree
+    }
+    torch.save(
+    {"data_list": rewired_data_list, "metadata": metadata},
+    os.path.join(dataset_path, save_name)
+)
     print(f"Dataset {dataset_name} processed & saved as {save_name} in {dataset_path}.")
 
 
@@ -220,12 +229,17 @@ if __name__ == "__main__":
     
     # preprocess_dataset(args.dataset_path, args.dataset_name, use_rewired=args.use_rewired)
 
-# use it like: python PrepareDatasets.py DATA/CHEMICAL --dataset-name NCI1 --use-rewired
+# use it like: python PrepareDatasets.py DATA/CHEMICAL --dataset-name PROTEINS --use-rewired
 
 
 # ~ python PrepareDatasets.py DATA/SOCIAL_1 --dataset-name REDDIT-BINARY --outer-k 10 --use-rewired --rewiring-strategy complement
+# python PrepareDatasets.py DATA/CHEMICAL --dataset-name PROTEINS --outer-k 10 --use-rewired --rewiring-strategy bridges
 
 # python Launch_Experiments.py --config-file config_fixed_gin.yml --dataset-name REDDIT-BINARY --result-folder results --debug
 
+# python Launch_Experiments.py --config-file config_fixed.yml --dataset-name PROTEINS --result-folder results --debug
+
 # For Social datasets with no node features:
 #python PrepareDatasets.py DATA/SOCIAL_1 --dataset-name <name> --use-one --outer-k 10
+
+# python PrepareDatasets.py DATA/CHEMICAL --dataset-name PROTEINS --us
