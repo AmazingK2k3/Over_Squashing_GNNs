@@ -150,9 +150,28 @@ class DiffPool(nn.Module):
         for i in range(self.num_diffpool_layers):
             if i != 0:
                 mask = None
-            if self.rewire_all_layers and i == self.num_diffpool_layers - 1:
-                rewired_index = data.rewired_edge_index
-                adj = to_dense_adj(rewired_index, batch=batch)
+
+                self.debug = 0
+            if not self.rewire_all_layers and i == self.num_diffpool_layers - self.rewired_layer:
+                adj_no_self = adj.clone()
+                adj_rewired = 1 - adj_no_self
+                adj_rewired = adj_rewired - torch.diag_embed(adj_rewired.diagonal(dim1=-2, dim2=-1))
+
+
+
+                # #  <<< COMPLEMENT CHECK HERE >>>
+                # I = torch.eye(adj.size(-1), device=adj.device).unsqueeze(0).expand_as(adj)
+                # check = adj + adj_rewired + I
+                # if torch.allclose(check, torch.ones_like(check)):
+                #     print(check)
+                #     print(f"Layer {i}: Complementation correcto")
+                # else:
+                #     print(f"Layer {i}: Something off ")
+                #     print("Sum deviation:", (check - torch.ones_like(check)).abs().sum().item())
+
+                adj = adj_rewired
+                
+                
 
             x, adj, l, e = self.diffpool_layers[i](x, adj, mask)  # x has shape (batch, MAX_no_nodes, feature_size)
             x_all.append(torch.max(x, dim=1)[0])

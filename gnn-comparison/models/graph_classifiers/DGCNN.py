@@ -54,7 +54,7 @@ class DGCNN(nn.Module):
         self.total_latent_dim = self.num_layers * self.embedding_dim
 
         # Add last embedding
-        self.convs.append(DGCNNConv(self.embedding_dim, 1)) # not a message passing layer?
+        self.convs.append(DGCNNConv(self.embedding_dim, 1)) # 
         self.total_latent_dim += 1
 
         self.convs = nn.ModuleList(self.convs)

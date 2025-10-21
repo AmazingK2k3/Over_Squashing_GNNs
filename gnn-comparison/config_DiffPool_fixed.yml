@@ -1,11 +1,11 @@
 model:
   - DiffPool
 device:
-  - cpu
+  - cuda
 batch_size:
   - 8
 learning_rate:
-  - 0.001
+  - 0.0001
   #- 0.0001
   #- 0.00001
 classifier_epochs:
@@ -49,9 +49,15 @@ rewire_for_all_layers:
 skip_model_selection:
   - 1 
 
-#NOTE: PENULTIMATE REWIRING HAS ISSUES, HENCE IN MODEL ARCHITECTURE PENULTIMATE LAYER IS NOT SUPPORTED YET.
+
+#--------------------------------------NOTE---------------------------------------------------------------#
+# NOTE: PENULTIMATE REWIRING HAS ISSUES, HENCE IN MODEL ARCHITECTURE PENULTIMATE LAYER IS NOT SUPPORTED YET.
 rewired_layer:
-  - 1 # 1 means rewiring happens in last layer
+  - 2 # 1 means rewiring happens in last layer
  # - 2 # 2 means rewiring happens in penultimate layer
+
+
+
+
 debug:
   - 1 # 1 is true

@@ -22,13 +22,13 @@ model:
 device:
   - cuda
 batch_size:
-  - 64
+  - 16
 dense_dim:
   - 128
 k:
   - 0.6
 learning_rate:
-  - 0.0001
+  - 0.00001
 classifier_epochs:
   - 1000
 optimizer:
@@ -59,7 +59,7 @@ rewire_for_all_layers:
 skip_model_selection:
   - 1 
 rewired_layer:
-  - 1 # 1 means rewiring happens in last layer
+  - 2 # 1 means rewiring happens in last layer
  # - 2 # 2 means rewiring happens in penultimate layer
 debug:
   - 1 # 1 is true
