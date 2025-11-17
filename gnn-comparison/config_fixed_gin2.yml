@@ -39,7 +39,7 @@ resume:
 rewire_all_layers:
   - 0 # 0 means last layer rewiring
 rewired_layer:
-  - 1 # 1 means rewiring happens in last layer
+  - 2 # 1 means rewiring happens in last layer
  # 2 means rewiring happens in penultimate layer
 debug:
   - 1

@@ -13,10 +13,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-# CHANGES MADE:
-  # added config for "use_rewired_for_all_layers"
-
+#
 model:
   - DGCNN
 device:
@@ -28,7 +25,7 @@ dense_dim:
 k:
   - 0.6
 learning_rate:
-  - 0.00001
+  - 0.0001
 classifier_epochs:
   - 1000
 optimizer:
@@ -45,7 +42,6 @@ early_stopper:
     args:
       patience: 500
       use_loss: False
-
 shuffle:
   - True
 l2:
@@ -53,7 +49,7 @@ l2:
 embedding_dim:
   - 64
 num_layers:
-  - 4
+  - 5
 rewire_for_all_layers:
   - 0 # 1 means rewire all layers
 skip_model_selection:

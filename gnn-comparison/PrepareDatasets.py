@@ -103,6 +103,7 @@ def preprocess_dataset(dataset_path, dataset_name, use_rewired=False, rewiring_s
         dataset = TUDataset(root=dataset_path, name=dataset_name)
     
     rewired_data_list = []
+    self_loops_flag = False
 
     for i, data in enumerate(dataset):
         logging.info(f"Processing graph {i + 1}/{len(dataset)} in dataset {dataset_name}")
@@ -191,9 +192,7 @@ def preprocess_dataset(dataset_path, dataset_name, use_rewired=False, rewiring_s
         "use__one": use_one,
         "use_node_degree": use_node_degree
     }
-    torch.save(
-    {"data_list": rewired_data_list, "metadata": metadata},
-    os.path.join(dataset_path, save_name)
+    torch.save({"data_list": rewired_data_list, "metadata": metadata},os.path.join(dataset_path, save_name)
 )
     print(f"Dataset {dataset_name} processed & saved as {save_name} in {dataset_path}.")
 
