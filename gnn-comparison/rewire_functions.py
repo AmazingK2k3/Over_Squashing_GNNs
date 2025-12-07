@@ -273,16 +273,18 @@ def apply_rewiring_strategy(data, strategy='bridges', top_n=2):
     else:
         logging.warning("Unknown rewiring strategy: %s. Using original graph.", strategy)
         return data.edge_index
+
 # Not used currently
-def partial_complement(edge_index, complement_edge_index, p=0.25):
-    # edge_index: [2, E]
-    # complement_edge_index: [2, E_c]
-    if complement_edge_index.shape[0] == 0:
-        return edge_index
-    else:
-        E_c = complement_edge_index.size(1)
-        n_sample = int(p * E_c)
-        perm = torch.randperm(E_c)[:n_sample]
-        sampled_complement = complement_edge_index[:, perm]
-        mixed_edges = torch.cat([edge_index, sampled_complement], dim=1)
-        return mixed_edges
+# def partial_complement(edge_index, complement_edge_index, p=0.25):
+#     # edge_index: [2, E]
+#     # complement_edge_index: [2, E_c]
+#     if complement_edge_index.shape[0] == 0:
+#         return edge_index
+#     else:
+#         E_c = complement_edge_index.size(1)
+#         n_sample = int(p * E_c)
+#         perm = torch.randperm(E_c)[:n_sample]
+#         sampled_complement = complement_edge_index[:, perm]
+#         mixed_edges = torch.cat([edge_index, sampled_complement], dim=1)
+#         return mixed_edges
+        

@@ -31,7 +31,7 @@ shuffle:
 num_layers:
   - 5 # changed: 5 ----> 3
 dim_embedding:
-  - 64
+  - 32
 aggregation:
   - mean 
 rewire_for_all_layers:
