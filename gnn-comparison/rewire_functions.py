@@ -32,7 +32,7 @@ def complement_graph(data,add_self_loops = False):
         edge_index = torch.cat([edge_index, self_loops], dim=1)
         flag = "self_loops added"
 
-    logging.info("Complemented graph ")
+    #logging.info("Complemented graph ")
     print(flag)
     return edge_index, add_self_loops
 

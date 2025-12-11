@@ -28,14 +28,13 @@ from torch_geometric.utils.convert import to_networkx
 import pickle
 from torch_geometric.data import InMemoryDataset
 from torch_geometric.utils import to_dense_adj, dense_to_sparse
-
+from Exp_2 import partial_sampled_edges
 from rewire_functions import (
     rewire_Graph,
     rewire_Graph_local_bridges,
     rewire_Graph_betweenness,
     apply_rewiring_strategy,
-    complement_graph,
-    partial_complement)
+    complement_graph)
 
 
 
@@ -152,16 +151,6 @@ def preprocess_dataset(dataset_path, dataset_name, use_rewired=False, rewiring_s
                 rewired_edge_index = rewire_Graph_local_bridges(data, top_n=top_n)
                 data.rewired_edge_index = rewired_edge_index
                 data.edge_index = original_edge_index
-
-            elif rewiring_strategy == 'partial_complement':
-                original_edge_index = data.edge_index.clone()
-                rewired_edge_index = complement_graph(data)
-                data.rewired_edge_index = rewired_edge_index
-                data.edge_index = original_edge_index 
-                print("edge_index.shape:", original_edge_index.shape)
-                print("complement_edge_index.shape:", rewired_edge_index.shape)
-                pc = partial_complement(original_edge_index, rewired_edge_index, p=0.25)
-                data.partial_edge_index = pc
                 
             else:
                 logging.warning(f"Unknown rewiring strategy: {rewiring_strategy}. Using bridges.")
