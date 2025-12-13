@@ -195,42 +195,42 @@ def main():
         # Define experiments directly in code
         experiments = [
             # GIN experiments
-            {
-                'config_file': 'config_fixed_gin.yml',
-                'dataset_name': 'IMDB-MULTI',
-                'debug': True,
-                'suffix': 'last_layer',
-            },
-            {
-                'config_file': 'config_fixed_gin2.yml',
-                'dataset_name': 'IMDB-MULTI',
-                'debug': True,
-                'suffix': 'penultimate_layer',
-            },
-            {
-                'config_file': 'config_fixed.yml',
-                'dataset_name': 'IMDB-MULTI',
-                'debug': True,
-                'suffix': 'last_layer',
-            },
-            {
-                'config_file': 'config_fixed2.yml',
-                'dataset_name': 'IMDB-MULTI',
-                'debug': True,
-                'suffix': 'penultimate_layer',
-            }
-            #             {
-            #     'config_file': 'config_fixed_DGCNN.yml',
+            # {
+            #     'config_file': 'config_fixed_gin.yml',
             #     'dataset_name': 'IMDB-MULTI',
             #     'debug': True,
             #     'suffix': 'last_layer',
             # },
             # {
-            #     'config_file': 'config_fixed_DGCNN2.yml',
+            #     'config_file': 'config_fixed_gin2.yml',
+            #     'dataset_name': 'IMDB-MULTI',
+            #     'debug': True,
+            #     'suffix': 'penultimate_layer',
+            # },
+            # {
+            #     'config_file': 'config_fixed.yml',
+            #     'dataset_name': 'IMDB-MULTI',
+            #     'debug': True,
+            #     'suffix': 'last_layer',
+            # },
+            # {
+            #     'config_file': 'config_fixed2.yml',
             #     'dataset_name': 'IMDB-MULTI',
             #     'debug': True,
             #     'suffix': 'penultimate_layer',
             # }
+            {
+                'config_file': 'config_fixed_DGCNN.yml',
+                'dataset_name': 'IMDB-MULTI',
+                'debug': True,
+                'suffix': 'last_layer',
+            },
+            {
+                'config_file': 'config_fixed_DGCNN2.yml',
+                'dataset_name': 'IMDB-MULTI',
+                'debug': True,
+                'suffix': 'penultimate_layer',
+            }
 
             
             # # DiffPool experiments

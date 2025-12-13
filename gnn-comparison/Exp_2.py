@@ -1,43 +1,61 @@
 import torch
-from rewire_functions import complement_graph
 
 
-def partial_sampled_edges(data,previous_edges = False, p = 0.30, p_increment = 0.10): # x: node feature
-    N = data.x.size(0) # number of nodes
-    n_sample = int(p * N * N) # number of edges to sample
-    perm = torch.randperm(N*N)[:n_sample]# rand smple
+def partial_sampled_edges(data, p=0.30, seed=42):
+    """
+    Generate edges for a graph starting from empty graph.
+    
+    Args:
+        data: PyG data object (used only for number of nodes)
+        p: percentage of max possible edges to sample (0.0 to 1.0)
+        seed: random seed for reproducibility
+    
+    Returns:
+        edge_index: [2, num_edges] tensor with sampled edges + self-loops (bidirectional)
+    """
+    torch.manual_seed(seed)
+    
+    N = data.x.size(0)  # number of nodes
+    
+    # Max possible undirected edges (no self-loops): n(n-1)/2
+    max_edges = (N * (N - 1)) // 2
+    
+    # Number of edges to sample based on percentage
+    n_sample = int(p * max_edges)
+    n_sample = max(1, min(n_sample, max_edges))  # clamp to valid range
+    
+    # Generate all possible undirected edges (i < j to avoid duplicates)
+    rows, cols = torch.triu_indices(N, N, offset=1)
+    all_possible_edges = torch.stack([rows, cols], dim=0)  # [2, max_edges]
+    
+    # Randomly sample n_sample edges
+    perm = torch.randperm(max_edges)[:n_sample]
+    sampled_edges = all_possible_edges[:, perm]
+    
+    # Make bidirectional (PyG convention for undirected graphs)
+    sampled_edges_bidirectional = torch.cat([
+        sampled_edges,
+        sampled_edges.flip(0)  # reverse direction
+    ], dim=1)
+    
+    # Add self-loops
+    self_loops = torch.arange(N, dtype=torch.long).unsqueeze(0).repeat(2, 1)
+    
+    # Combine: sampled edges (bidirectional) + self-loops
+    edge_index = torch.cat([sampled_edges_bidirectional, self_loops], dim=1)
+    
+    return edge_index
 
-    nodes = torch.arange(N)
-    U, V = torch.meshgrid(nodes, nodes, indexing='ij')
-    full_edge_index = torch.stack([U.flatten(), V.flatten()], dim=0)
 
-
-    if previous_edges:
-        
-
-        complement_edges, _ = complement_graph(data, add_self_loops=True)
-
-
-        num_comp = complement_edges.size(1)
-
-        n_sample = int(p_increment * num_comp) # number of remaining edges to sample
-
-        perm = torch.randperm(num_comp)[:n_sample]
-
-        sampled_comp = complement_edges[:,perm]
-        # add sampled edges to previous edges
-
-        sampled_edges = torch.cat([data.edge_index, sampled_comp], dim=1)
-
-
-    else:
-        sampled_edges = full_edge_index[:,perm]
-
-    return sampled_edges
-
-
-
-
-
-
-
+def get_edge_stats(data):
+    """Helper to print edge statistics for debugging."""
+    N = data.x.size(0)
+    max_edges = (N * (N - 1)) // 2
+    if hasattr(data, 'rewired_edge_index'):
+        # Count unique undirected edges (excluding self-loops)
+        ei = data.rewired_edge_index
+        mask = ei[0] < ei[1]  # only count one direction
+        unique_edges = mask.sum().item()
+        pct = (unique_edges / max_edges) * 100 if max_edges > 0 else 0
+        return N, max_edges, unique_edges, pct
+    return N, max_edges, 0, 0.0
