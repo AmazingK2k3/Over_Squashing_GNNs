@@ -39,10 +39,12 @@ def partial_sampled_edges(data, p=0.30, seed=42):
     ], dim=1)
     
     # Add self-loops
-    self_loops = torch.arange(N, dtype=torch.long).unsqueeze(0).repeat(2, 1)
+    # self_loops = torch.arange(N, dtype=torch.long).unsqueeze(0).repeat(2, 1)
     
-    # Combine: sampled edges (bidirectional) + self-loops
-    edge_index = torch.cat([sampled_edges_bidirectional, self_loops], dim=1)
+    # # Combine: sampled edges (bidirectional) + self-loops
+    # edge_index = torch.cat([sampled_edges_bidirectional, self_loops], dim=1)
+
+    edge_index = sampled_edges_bidirectional
     
     return edge_index
 

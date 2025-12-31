@@ -132,3 +132,5 @@ dmypy.json
 #data
 tf-gnn-samples/data
 *.csv
+test.py
+results
