@@ -156,4 +156,4 @@ if __name__ == "__main__":
 
 # python iterative_rewire.py DATA/CHEMICAL   --dataset-name ENZYMES 
 
-#python iterative_rewire.py --data-dir /teamspace/studios/this_studio/Over_Squashing_GNNs/gnn-comparison/DATA/CHEMICAL/ --dataset-name ENZYMES
+#python iterative_rewiring_2.py --data-dir /teamspace/studios/this_studio/Over_Squashing_GNNs/gnn-comparison/DATA/CHEMICAL/ --dataset-name ENZYMES
