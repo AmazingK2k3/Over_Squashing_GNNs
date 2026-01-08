@@ -45,6 +45,9 @@ class EdgeExperimentRunner:
         """Clear temporary results folder to prevent conflicts between runs."""
         if not os.path.exists(result_folder):
             return
+
+        trash_dir = os.path.join(result_folder, 'DELETED_BACKUPS')
+        os.makedirs(trash_dir, exist_ok = True)
             
         # Specific patterns that Launch_Experiments.py creates
         # Format: {MODEL}_{DATASET}_none_self_loops_{bool}
@@ -56,12 +59,16 @@ class EdgeExperimentRunner:
         ]
         
         for item in os.listdir(result_folder):
+            if item == "DELETED_BACKUPS": continue
+
             item_path = os.path.join(result_folder, item)
             if os.path.isdir(item_path):
                 # Check if folder matches any of the experiment output patterns
                 if any(item.startswith(pattern) for pattern in patterns_to_clear):
-                    logging.info(f"Clearing previous results: {item_path}")
-                    shutil.rmtree(item_path)
+                    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                    safe_path = os.path.join(trash_dir, f"{item}_{timestamp}")
+                    logging.info(f"Moving old results to backup: {safe_path}")
+                    shutil.move(item_path, safe_path) # Move instead of rmtree
     
     def get_rewired_files_dir(self, dataset_name):
         """
@@ -540,7 +547,8 @@ if __name__ == '__main__':
 # -------------------------------------------------------
 #
 # Full experiment (all percentages):
-#   python iterative_runs.py --dataset ENZYMES --config-file config_fixed_gin.yml --debug
+#   python iterative_runs.py --dataset ENZYMES --config-file config_fixed.yml --debug
+#.  python iterative_runs.py --dataset ENZYMES --config-file config_fixed_gin.yml --debug
 #   python iterative_runs.py --dataset NCI1 --config-file config_fixed_graphsage.yml --debug
 #
 # Single percentage test:
@@ -548,7 +556,7 @@ if __name__ == '__main__':
 #
 # Custom range (test with 3 percentages):
 #   python iterative_runs.py --dataset ENZYMES --config-file config_fixed_gin.yml --start-p 0.30 --end-p 0.40 --p-increment 0.05 --debug
-#
+#.  python iterative_runs.py --dataset ENZYMES --config-file config_fixed.yml --start-p 0.45 --end-p 1.0 --p-increment 0.05 --debug
 # Plot existing results:
 #   python iterative_runs.py --dataset ENZYMES --config-file config_fixed_gin.yml --plot-only RESULTS_EDGE_EXP/ENZYMES_config_fixed_gin_20241201_120000.json
 #
