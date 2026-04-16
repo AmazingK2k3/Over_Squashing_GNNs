@@ -220,26 +220,26 @@ def main():
             #     'suffix': 'penultimate_layer',
             # }
             {
-                'config_file': 'config_fixed_DGCNN.yml',
-                'dataset_name': 'IMDB-MULTI',
+                'config_file': 'config_fixed2.yml',
+                'dataset_name': 'NCI1',
+                'debug': True,
+                'suffix': 'penultimate_layer',
+            },
+            {
+                'config_file': 'config_fixed_gin.yml',
+                'dataset_name': 'NCI1',
                 'debug': True,
                 'suffix': 'last_layer',
             },
-            {
-                'config_file': 'config_fixed_DGCNN2.yml',
-                'dataset_name': 'IMDB-MULTI',
-                'debug': True,
-                'suffix': 'penultimate_layer',
-            }
 
             
             # # DiffPool experiments
-            # {
-            #     'config_file': 'config_DiffPool_fixed.yml',
-            #     'dataset_name': 'ENZYMES',
-            #     'debug': True,
-            #     'suffix': 'diffpool',
-            # },
+            {
+                'config_file': 'config_DiffPool_fixed.yml',
+                'dataset_name': 'NCI1',
+                'debug': True,
+                'suffix': 'diffpool_penultimate_layer',
+            }
             # {
             #     'config_file': 'config_DiffPool_fixed.yml',
             #     'dataset_name': 'PROTEINS',
@@ -247,13 +247,12 @@ def main():
             #     'suffix': 'diffpool',
             # },
             
-            # # GraphSAGE experiments
+            # # # GraphSAGE experiments
             # {
-            #     'config_file': 'config_GraphSAGE.yml',
-            #     'dataset_name': 'ENZYMES',
-            #     'outer_folds': 10,
-            #     'debug': False,
-            #     'suffix': 'sage',
+            #     'config_file': 'config_fixed2.yml',
+            #     'dataset_name': 'NCI1',
+            #     'debug': True,
+            #     'suffix': 'penultimate_layer',
             # },
             
             # Add more experiments here...

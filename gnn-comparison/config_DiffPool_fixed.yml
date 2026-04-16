@@ -53,7 +53,7 @@ skip_model_selection:
 #--------------------------------------NOTE---------------------------------------------------------------#
 # NOTE: PENULTIMATE REWIRING HAS ISSUES, HENCE IN MODEL ARCHITECTURE PENULTIMATE LAYER IS NOT SUPPORTED YET.
 rewired_layer:
-  - 1 # 1 means rewiring happens in last layer
+  - 2 # 1 means rewiring happens in last layer
  # - 2 # 2 means rewiring happens in penultimate layer
 
 

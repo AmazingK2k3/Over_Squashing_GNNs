@@ -28,7 +28,7 @@ NCI1,
 Enzymes, 
 IMDBBinary, 
 RedditBinary,
-IMDBMulti,Collab)
+IMDBMulti,Collab, DD) # added DD here
 
 def main(config_file, dataset_name,
          outer_k, outer_processes, inner_k, inner_processes, result_folder, debug=False):
@@ -50,7 +50,8 @@ def main(config_file, dataset_name,
     "REDDIT-BINARY": RedditBinary,
     "IMDB-BINARY": IMDBBinary,
     "IMDB-MULTI": IMDBMulti,
-    "COLLAB": Collab
+    "COLLAB": Collab,
+    "DD": DD # this line was added
 }
     dataset_class = dataset_class_map.get(dataset_name.upper())
 

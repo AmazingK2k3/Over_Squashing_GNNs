@@ -1,38 +1,29 @@
 [
   {
-    "timestamp": "2025-11-12T14:11:50.027249",
-    "config_file": "config_fixed_gin.yml",
-    "dataset_name": "IMDB-MULTI",
-    "result_folder": "results/IMDB-MULTI_config_fixed_gin_20251112_141150_last_layer",
-    "command": "python Launch_Experiments.py --config-file config_fixed_gin.yml --dataset-name IMDB-MULTI --result-folder results/IMDB-MULTI_config_fixed_gin_20251112_141150_last_layer --outer-folds 10 --inner-folds 5 --outer-processes 2 --inner-processes 1 --debug",
-    "status": "success",
-    "elapsed_time": 46404.38942694664
-  },
-  {
-    "timestamp": "2025-11-13T03:05:14.417243",
-    "config_file": "config_fixed_gin2.yml",
-    "dataset_name": "IMDB-MULTI",
-    "result_folder": "results/IMDB-MULTI_config_fixed_gin2_20251113_030514_penultimate_layer",
-    "command": "python Launch_Experiments.py --config-file config_fixed_gin2.yml --dataset-name IMDB-MULTI --result-folder results/IMDB-MULTI_config_fixed_gin2_20251113_030514_penultimate_layer --outer-folds 10 --inner-folds 5 --outer-processes 2 --inner-processes 1 --debug",
-    "status": "success",
-    "elapsed_time": 43772.0453145504
-  },
-  {
-    "timestamp": "2025-11-13T15:14:46.463144",
-    "config_file": "config_fixed.yml",
-    "dataset_name": "IMDB-MULTI",
-    "result_folder": "results/IMDB-MULTI_config_fixed_20251113_151446_last_layer",
-    "command": "python Launch_Experiments.py --config-file config_fixed.yml --dataset-name IMDB-MULTI --result-folder results/IMDB-MULTI_config_fixed_20251113_151446_last_layer --outer-folds 10 --inner-folds 5 --outer-processes 2 --inner-processes 1 --debug",
-    "status": "success",
-    "elapsed_time": 10673.91803407669
-  },
-  {
-    "timestamp": "2025-11-13T18:12:40.381993",
+    "timestamp": "2026-03-14T03:57:38.206037",
     "config_file": "config_fixed2.yml",
-    "dataset_name": "IMDB-MULTI",
-    "result_folder": "results/IMDB-MULTI_config_fixed2_20251113_181240_penultimate_layer",
-    "command": "python Launch_Experiments.py --config-file config_fixed2.yml --dataset-name IMDB-MULTI --result-folder results/IMDB-MULTI_config_fixed2_20251113_181240_penultimate_layer --outer-folds 10 --inner-folds 5 --outer-processes 2 --inner-processes 1 --debug",
+    "dataset_name": "NCI1",
+    "result_folder": "results/NCI1_config_fixed2_20260314_035738_penultimate_layer",
+    "command": "python Launch_Experiments.py --config-file config_fixed2.yml --dataset-name NCI1 --result-folder results/NCI1_config_fixed2_20260314_035738_penultimate_layer --outer-folds 10 --inner-folds 5 --outer-processes 2 --inner-processes 1 --debug",
     "status": "success",
-    "elapsed_time": 10478.182965755463
+    "elapsed_time": 29325.72807574272
+  },
+  {
+    "timestamp": "2026-03-14T12:06:23.934857",
+    "config_file": "config_fixed_gin.yml",
+    "dataset_name": "NCI1",
+    "result_folder": "results/NCI1_config_fixed_gin_20260314_120623_last_layer",
+    "command": "python Launch_Experiments.py --config-file config_fixed_gin.yml --dataset-name NCI1 --result-folder results/NCI1_config_fixed_gin_20260314_120623_last_layer --outer-folds 10 --inner-folds 5 --outer-processes 2 --inner-processes 1 --debug",
+    "status": "success",
+    "elapsed_time": 49542.56422638893
+  },
+  {
+    "timestamp": "2026-03-15T01:52:06.499560",
+    "config_file": "config_DiffPool_fixed.yml",
+    "dataset_name": "NCI1",
+    "result_folder": "results/NCI1_config_DiffPool_fixed_20260315_015206_diffpool_penultimate_layer",
+    "command": "python Launch_Experiments.py --config-file config_DiffPool_fixed.yml --dataset-name NCI1 --result-folder results/NCI1_config_DiffPool_fixed_20260315_015206_diffpool_penultimate_layer --outer-folds 10 --inner-folds 5 --outer-processes 2 --inner-processes 1 --debug",
+    "status": "success",
+    "elapsed_time": 166952.23675227165
   }
 ]
