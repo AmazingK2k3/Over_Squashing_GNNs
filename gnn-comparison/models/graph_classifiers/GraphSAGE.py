@@ -1,0 +1,100 @@
+#
+# Copyright (C)  2020  University of Pisa
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+from errno import EDEADLK
+import torch
+from torch._C import NoneType
+import torch.nn.functional as F
+from torch import nn
+from torch_geometric.nn import SAGEConv, global_max_pool
+
+
+class GraphSAGE(nn.Module):
+    def __init__(self, dim_features, dim_target, config):
+        super().__init__()
+
+        num_layers = config['num_layers']
+        dim_embedding = config['dim_embedding']
+        self.aggregation = config['aggregation']  # can be mean or max
+        self.use_rewired_for_all_layers = bool(config['rewire_for_all_layers']) if 'rewire_for_all_layers' in config else False
+        self.rewired_layer = config['rewired_layer']
+        self.debug = bool(config['debug'])
+
+        if self.aggregation == 'max':
+            self.fc_max = nn.Linear(dim_embedding, dim_embedding)
+
+        self.layers = nn.ModuleList([])
+        for i in range(num_layers):
+            dim_input = dim_features if i == 0 else dim_embedding
+
+            # Overwrite aggregation method (default is set to mean
+            conv = SAGEConv(dim_input, dim_embedding, aggr=self.aggregation)
+
+            self.layers.append(conv)
+
+        # For graph classification
+        self.fc1 = nn.Linear(num_layers * dim_embedding, dim_embedding)
+        self.fc2 = nn.Linear(dim_embedding, dim_target)
+    
+
+    def forward(self, data):
+        # if rewired_edge_index is None:
+        #     rewired_edge_index = getattr(data,'rewire_edge_index', None) 
+       #rewired_edge_index = data.rewired_edge_index if hasattr(data, 'rewired_edge_index') else None
+        
+        
+        # rewired_edge_index = data.rewired_edge_index
+        # print(rewired_edge_index)
+        x, batch, = data.x, data.batch
+        rewired_edge_index = data.rewired_edge_index
+      
+        x_all = []
+
+        for i, layer in enumerate(self.layers):
+
+            # if not self.use_rewired_for_all_layers and i == len(self.layers) - self.rewired_layer:
+            if not self.use_rewired_for_all_layers and i == len(self.layers) - self.rewired_layer and rewired_edge_index.shape[0]>0:
+                edge_index = rewired_edge_index
+                if self.debug:
+                    print(f"__Rewiring at {i} | Total Layers {len(self.layers)}_")
+                    print("total layers",len(self.layers))
+                    self.debug = 0
+
+            # if not self.use_rewired_for_all_layers and i == len(self.layers) - 1:
+            #     edge_index = rewired_edge_index
+            #     if self.debug:
+            #         print(f"_Last layerRewiring at {i+1} | Total Layers {len(self.layers)}_")
+            #         self.debug = 0
+            # elif not self.use_rewired_for_all_layers and i == len(self.layers) - 2:
+            #     edge_index = data.partial_edge_index
+            #     if self.debug:
+            #         print(f"__Partial Rewiring at {i+1} | Total Layers {len(self.layers)}_")
+                    
+            else:
+                edge_index = data.edge_index
+
+                
+            x = layer(x, edge_index)
+            if self.aggregation == 'max':
+                x = torch.relu(self.fc_max(x))
+            x_all.append(x)
+
+        x = torch.cat(x_all, dim=1)
+        x = global_max_pool(x, batch)
+
+        x = F.relu(self.fc1(x))
+        x = self.fc2(x)
+        return x

@@ -1,0 +1,20 @@
+[
+  {
+    "timestamp": "2026-06-01T18:23:09.677593",
+    "config_file": "config_DiffPool_fixed.yml",
+    "dataset_name": "IMDB-MULTI",
+    "result_folder": "results/IMDB-MULTI_config_DiffPool_fixed_20260601_182309_last_layer",
+    "command": "python Launch_Experiments.py --config-file config_DiffPool_fixed.yml --dataset-name IMDB-MULTI --result-folder results/IMDB-MULTI_config_DiffPool_fixed_20260601_182309_last_layer --outer-folds 10 --inner-folds 5 --outer-processes 2 --inner-processes 1 --debug",
+    "status": "success",
+    "elapsed_time": 75932.18904781342
+  },
+  {
+    "timestamp": "2026-06-02T15:28:41.867099",
+    "config_file": "config_DiffPool_fixed.yml",
+    "dataset_name": "IMDB-BINARY",
+    "result_folder": "results/IMDB-BINARY_config_DiffPool_fixed_20260602_152841_last_layer",
+    "command": "python Launch_Experiments.py --config-file config_DiffPool_fixed.yml --dataset-name IMDB-BINARY --result-folder results/IMDB-BINARY_config_DiffPool_fixed_20260602_152841_last_layer --outer-folds 10 --inner-folds 5 --outer-processes 2 --inner-processes 1 --debug",
+    "status": "success",
+    "elapsed_time": 49069.115220069885
+  }
+]
