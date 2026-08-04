@@ -82,11 +82,7 @@ def get_args_dict():
 
 from utils.custom_data import CustomData
 
-# class CustomData(Data):
-#     def __inc__(self,key,value):
-#         if key =='rewired_edge_index':
-#             return self.num_nodes
-#         return super().__inc__(key,value
+
 
 def preprocess_dataset(dataset_path, dataset_name, use_rewired=False, rewiring_strategy='bridges', top_n=2, use_one=False, use_node_degree=False):
     """
@@ -196,8 +192,8 @@ if __name__ == "__main__":
     use_rewired = args_dict['use_rewired']
     rewiring_strategy = args_dict.get('rewiring_strategy', 'bridges')
     top_n = args_dict.get('top_n_edges', 2)
-    use_one = args_dict.get('use_one', False)  # FIXED: Now actually using this parameter
-    use_node_degree = args_dict.get('use_node_degree', False)  # FIXED: Now actually using this parameter
+    use_one = args_dict.get('use_one', False)  
+    use_node_degree = args_dict.get('use_node_degree', False) 
 
     if dataset_name == 'all':
         for name in DATASETS:
@@ -209,27 +205,9 @@ if __name__ == "__main__":
                          rewiring_strategy=rewiring_strategy, top_n=top_n,
                          use_one=use_one, use_node_degree=use_node_degree)  # FIXED: Pass the flags
 
-    # parser = argparse.ArgumentParser(description="Preprocess datasets.")
-    # parser.add_argument("dataset_path", type=str, help="Path to the dataset folder.")
-    # parser.add_argument("--dataset-name", type=str, required=True, help="Name of the dataset.")
-    # parser.add_argument("--use-rewired", action="store_true", help="Add rewired edges to the dataset.")
-    # args = parser.parse_args()
-    
-    # preprocess_dataset(args.dataset_path, args.dataset_name, use_rewired=args.use_rewired)
 
-# use it like: python PrepareDatasets.py DATA/CHEMICAL --dataset-name PROTEINS --use-rewired
-
-
-# ~ python PrepareDatasets.py DATA/SOCIAL_1 --dataset-name REDDIT-BINARY --outer-k 10 --use-rewired --rewiring-strategy complement
-# python PrepareDatasets.py DATA/CHEMICAL --dataset-name ENZYMES --outer-k 10 --use-rewired --rewiring-strategy complement
-
-# python Launch_Experiments.py --config-file config_fixed_gin.yml --dataset-name NCI1 --result-folder results --debug
-
-# python Launch_Experiments.py --config-file config_DiffPool_fixed.yml --dataset-name ENZYMES --result-folder results --debug
+# eg:  python PrepareDatasets.py DATA/CHEMICAL --dataset-name PROTEINS --use-rewired
 
 # For Social datasets with no node features:
 #python PrepareDatasets.py DATA/SOCIAL_1 --dataset-name <name> --use-one --outer-k 10
 
-# python PrepareDatasets.py DATA/CHEMICAL --dataset-name PROTEINS --us
-
-#python PrepareDatasets.py DATA/SOCIAL_DEGREE --dataset-name IMDB-BINARY  --outer-k 10 --rewiring-strategy complement
