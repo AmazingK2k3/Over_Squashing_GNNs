@@ -1,4 +1,0 @@
-docopt
-numpy
-dpu-utils
-tensorflow
